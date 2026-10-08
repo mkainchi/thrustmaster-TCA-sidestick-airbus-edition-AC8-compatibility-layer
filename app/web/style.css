@@ -1,0 +1,32 @@
+:root { color-scheme: dark; --background: #111922; --surface: #1b2733; --foreground: #eef3f6; --secondary: #bdccd7; --border: #658091; --accent: #86dfcf; --danger: #ffbcb5; --focus: #f3d887; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--background); color: var(--foreground); font: 1rem/1.5 system-ui, sans-serif; }
+main { max-width: 1160px; margin: auto; padding: 32px 24px 48px; }
+h1 { font-size: 1.9rem; margin: 0 0 8px; } h2 { font-size: 1.25rem; margin: 0 0 16px; } h3 { font-size: 1rem; margin: 20px 0 10px; }
+p { margin: 10px 0; max-width: 72ch; color: var(--secondary); }
+section { margin-top: 28px; padding: 24px 0; border-top: 1px solid var(--border); }
+label { display: block; margin: 14px 0 6px; font-weight: 600; }
+input, select, button { font: inherit; color: var(--foreground); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; min-height: 44px; padding: 8px 12px; max-width: 100%; }
+input:not([type=checkbox]), select { width: 100%; } #mode { max-width: 480px; }
+input[type=checkbox] { min-height: auto; width: 18px; height: 18px; margin-right: 10px; accent-color: var(--accent); }
+#invert-fields { display: grid; grid-template-columns: 1fr 44px; align-items: center; }
+#invert-fields label { min-height: 44px; margin: 0; padding: 10px 0; cursor: pointer; }
+button { cursor: pointer; } button:hover { border-color: var(--accent); } button:disabled { opacity: .55; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, .control:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+button:active { transform: translateY(1px); } #save { background: var(--accent); color: var(--background); font-weight: 700; }
+.mapping-workspace { display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; }
+.mapping-editor { min-width: 0; } .hardware svg { width: 100%; max-width: 540px; display: block; }
+.device { fill: var(--surface); stroke: var(--border); stroke-width: 2; } .grip { fill: var(--background); stroke: var(--border); stroke-width: 2; } .hat { fill: var(--accent); }
+.control { cursor: pointer; } .control circle { fill: var(--surface); stroke: var(--border); stroke-width: 2; }
+.control:hover circle, .control[aria-pressed=true] circle { stroke: var(--accent); stroke-width: 4; }
+.control.live circle { fill: var(--accent); } .control.live text { fill: var(--background); }
+.control text { text-anchor: middle; fill: var(--foreground); font: 600 18px system-ui, sans-serif; pointer-events: none; }
+.annotation { fill: var(--secondary); font: 15px system-ui, sans-serif; }
+#dependencies { list-style: none; padding: 0; } #dependencies li { padding: 12px 0; border-bottom: 1px solid var(--border); }
+#dependencies a { display: inline-block; color: var(--accent); min-height: 44px; padding: 8px 0; text-underline-offset: 4px; }
+.error, #load-error { color: var(--danger); } .help { font-size: .9rem; } .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+footer { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+output { display: block; color: var(--secondary); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+::selection { color: var(--background); background: var(--accent); } input { caret-color: var(--accent); }
+[hidden] { display: none !important; }
+@media (max-width: 760px) { main { padding: 20px 16px 36px; } .mapping-workspace { grid-template-columns: 1fr; gap: 20px; } .hardware { max-width: 540px; } }

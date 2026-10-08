@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=app --cov=tools --cov-branch --cov-report=term-missing --cov-report=json:.local/python-coverage.json --cov-fail-under=100"
+
+[tool.coverage.run]
+branch = true
+source = ["app", "tools"]
+
+[tool.coverage.report]
+precision = 2
+fail_under = 100
+exclude_lines = []

@@ -1,0 +1,15 @@
+# Privacy and sharing
+
+The public project contains generic supported-product identifiers and example bindings. It excludes owner identity, personal paths, serials, USB instance paths, host inventory, game saves and diagnostic dumps. Manufacturer/product names and generic VID/PID constants identify compatibility, not a particular device.
+
+The offline editor binds only to 127.0.0.1, uses a random session token and local assets, checks Host and write Origin, bounds request size and time, applies a restrictive Content Security Policy and disables request/error logging. There is no telemetry, upload, account or cloud service. Dependency links open official websites only when clicked. Anyone able to read the private URL or run code as your Windows user can access the editor; it is not a boundary against a compromised local account.
+
+Installed keyboard layouts and their Windows suggestion are read only for local display/translation. Controller input uses native WinMM. Presence checks inspect generic hardware IDs through SetupAPI without retrieving device instance paths or serials. TARGET installation candidates and dependency health are checked locally. The project does not read game saves, credentials, network settings or unrelated host inventories.
+
+Mappings, TARGET installation paths, generated scripts with local paths, readiness/stop signals and session metadata live under ignored `.local/` in the package being used. Previous configuration and migrated legacy originals are retained there. Detailed skill reports, test traces, screenshots, development environments and build archives remain ignored. Configuration responses deliberately contain local paths needed by that local UI; do not share the browser page, its URL, console captures or private folder.
+
+Run `check_privacy.cmd` before sharing repository content. It scans tracked and eligible untracked files, including binaries and decompressed ZIP contents, for personal paths, unique USB instance paths, local username/Git author markers and common credential patterns. Markers are read locally and never printed or saved. Finding output includes redacted filenames and categories, never matched private values. Hash-bound exceptions permit verified upstream path examples/build metadata only; they never exempt current identity, credentials or unique USB IDs. An automated scan cannot recognize every identifying sentence or secret. Review your custom content too.
+
+Build redistributable archives using the release tool described in README.md. Its explicit allowlist excludes `.local/`, `.git/`, caches, diagnostics, development skills and private profiles even if someone later changes Git ignores. It runs privacy/license/naming checks before packaging. Do not zip the entire desktop directory. Do not force-add ignored files to Git.
+
+Git author identity, hosting account, repository name, remote URL and published history are separate identity surfaces. This project does not change Git identity settings, rewrite history or publish the repository. Third-party copyright holders' required attribution is upstream licensing information, not information about the user's setup.

@@ -1,0 +1,34 @@
+# Machine-specific configuration and generated output
+**/.local/
+/.impeccable/
+node_modules/
+.venv/
+.coverage*
+htmlcov/
+coverage/
+playwright-report/
+test-results/
+.pytest_cache/
+**/logs/
+**/diagnostics/
+**/screenshots/
+**/__pycache__/
+*.py[cod]
+*.log
+*.dmp
+*.sav
+*.bak
+*.tmp
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+# Releases must be assembled from the audited public file list.
+/dist/
+/releases/
+/*.zip
+Thumbs.db
+Desktop.ini
+.DS_Store

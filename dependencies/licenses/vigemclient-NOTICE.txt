@@ -1,0 +1,5 @@
+ViGEmClient.dll: PE file/product version 1.0.0.1.
+Copyright (C) 2017-2020 Nefarius Software Solutions e.U.
+Unmodified binary from the pinned vgamepad 0.1.0 source archive.
+MIT permission text and upstream author notice: vigemclient-LICENSE.txt.
+Exact origin, archive hash and binary hash: ../manifest.json.

@@ -1,0 +1,922 @@
+{
+  ".agents/skills/impeccable/agents/impeccable_asset_producer.toml": {
+    "sha256": "4dbdb0cfdc2466961da6b22d200f3ec7bf8bb47c27448a2e6e3c03cdbf589831",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/agents/impeccable_documenter.toml": {
+    "sha256": "2feb3768125ba6469c92a50d516727e6d42f44579165ddfd33409948e2a3803d",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/agents/impeccable_finish_reviewer.toml": {
+    "sha256": "d57c3e0453f601ad688911fca4471057c7b46b561fcd42a1e12a581101c5186c",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/agents/impeccable_manual_edit_applier.toml": {
+    "sha256": "6c9ce3e27ec4520ead001da3aad2a2ebba481c4e5cd22873db8890259ee579fe",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/agents/openai.yaml": {
+    "sha256": "cbd8bd68fa00935dd0f179adb169252629cf7ee443ea9dc7db77e7ef2cf77446",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/LICENSE": {
+    "sha256": "02bb8c3b4e70190e3986c0404ad2fd8d639b4f534252d82379cc1b502b6d1812",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/NOTICE.md": {
+    "sha256": "c60a093c2845fd9fb82f9c6f742ece31f379f8190b535309d32d66c45ccffdcb",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/adapt.md": {
+    "sha256": "871a8e4d749b807c693ebabd83defbd6c76e1bd2a0f53a28a460cb1308ba8634",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/adapt.native.md": {
+    "sha256": "6acc0bf221a4ddc6e5c6438348920b2ca2393b29c4314dbde2cdc23f2b1a9639",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/android.md": {
+    "sha256": "058f81f256134841875fd3183e06b37a023de0c877fd2b9eecd97011640791fe",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/animate.md": {
+    "sha256": "d658c48ffbe0031e8e3b318996cad6ceafe29e40aa50d5bb25e4bf1d6839dc7c",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/audit.md": {
+    "sha256": "41764be7bf974b95ee469f11c496714b4b3cf2ba594c0b8f838a0742680229a9",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/audit.native.md": {
+    "sha256": "960cb922bc934adbf9192e9428ff6bec1f382038166f02a785939c93b7391067",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/bolder.md": {
+    "sha256": "f964506c0fae87b3c2c1db7016ddc9be9ef970bbcf5548d684b997b5d5991586",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/clarify.md": {
+    "sha256": "173dd66abe65633910dcb04a51f40d6ff2a793f87088f022a02fc4cad24dd133",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/colorize.md": {
+    "sha256": "bc5f71f1129d0f2c310d913d07c8dc609a1d25644121bd78c308f42d52a0b9e9",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/component-review.md": {
+    "sha256": "10489e5265e49a4ef2737cd0e674c149ed41e1f703efe922e53ea3c91e833427",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/craft-floor.md": {
+    "sha256": "e802e4f7bdc89050a9c0f2ca506e1d493a2316e6e810c0336c57aa073717ef3e",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/craft.md": {
+    "sha256": "9205e222bc6565b37fb504ceec93233c2d2a456802b69d16e6b1c44723907c4c",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/critique.md": {
+    "sha256": "cb8caddbb3919e5bf7f252143b519fb16db28a244642d937b186cb89962d9201",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/degraded/asset-producer.md": {
+    "sha256": "877d274f41500c780bad25b2bca7fa95eff1a32a7b95397dd388c72848e86a6c",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/degraded/documenter.md": {
+    "sha256": "bcc05ea92faebb5c74037a9d4263a5ce9a56f5ab07c8ab3c59ee704d8cade745",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/degraded/finish-reviewer.md": {
+    "sha256": "275dd1b6e63bbd30d2713227c4f79b880a8bc4e01cc48d392068bb86939d3afa",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/degraded/manual-edit-applier.md": {
+    "sha256": "5fae7f8a2fc3ddd49ad0a413446dc44daedef5b6b7de5eb935bd2fbfad646d58",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/delight.md": {
+    "sha256": "098a891028ce59c212b747d3c70468dd750aff7053a703d1336045ed31e0da7c",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/distill.md": {
+    "sha256": "ea8432c90c30ecb0426662a681ead5c0941113079704e1a766cda09e85b15b4f",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/doctor.md": {
+    "sha256": "a98b397cedeeaa1da57f3395b3d9b6c1fc477f4247fb9dc13e4da3da588283ff",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/document.md": {
+    "sha256": "3673248740bcdd1122ccc610093ba2fe52f3943a61ce0b7170b74dc49e5b6098",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/extract.md": {
+    "sha256": "31b90048c0b540daec46762a10c2b6b6434737a89af005054d8b848d829d003b",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/generate.md": {
+    "sha256": "53628d05b7eff0d4f48b95e48fad40266452fe1b42f398bd88dd9328353e0dd8",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/harden.md": {
+    "sha256": "16ba7fca1973c5faf53dd2ca523559129c0fe9e5f8d50b645f527afa78186cd2",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/hooks.md": {
+    "sha256": "3e3209e6b45497c7aee8234f5be880399ed6d99db442dcf3e024f061cd2027ba",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/init.md": {
+    "sha256": "bb069b43c09109d7031b0374e31955749fec657b252d39782f11e8985aca2b51",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/ios.md": {
+    "sha256": "40c87038b5f75147a5952a96237acf312a327bf70c1bcd8e0a5f064625ae9668",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/layout.md": {
+    "sha256": "0bc7d7971b3edf2acd0580e847458dc6d84129d90715b452799ace3bed815c7c",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/live-setup.md": {
+    "sha256": "2b5b2fbf5f658f34ea1997fb1aeebe01604d05187f75c6a4f1f55a5bc78520a4",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/live.md": {
+    "sha256": "68c5636a7858dd0b5137a9229c15e25fdc2ee40a0f8a4e9d809f78e809256262",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/mode-operate.md": {
+    "sha256": "7a52dd7a94ee75f6ae89542c86a1b6e1d306812b16e0d9dbf12d4acad44d148b",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/mode-persuade.md": {
+    "sha256": "21e78c8a77badb3f83290cd4577ed3b24bd4dd3b57136d7da75733d4f3ee9ac0",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/mode-read.md": {
+    "sha256": "a569989e6a3d6453b4c45e9474e162a15cc54e11732ac6baa7990a6e7cccc0b5",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/new-work.md": {
+    "sha256": "723d3985d079fa7a3c4140a072b6d6937ffc109eb462f9be5b1f97027b3fb714",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/onboard.md": {
+    "sha256": "ef2dde00030580ed2765cbf7be9b2ea4a6f64cb915b804fd6f6abcf38051c7b9",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/operate.md": {
+    "sha256": "a9d2203acd45ca33a13d5c68b02b23ed512425ac15f0e8438318ed124b43729d",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/optimize.md": {
+    "sha256": "f672ef8251a3ed4051a053d30819664951b17540b2899acd27d20e500c234abc",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/overdrive.md": {
+    "sha256": "fce6688138d2ceb1e3d2cde5231f54b1d8dc8748b4c95a7919aa83b6f924cf96",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/polish.md": {
+    "sha256": "81666fc7f783b4e3514db6554e713dc0479bd9cdedb06e93d15f8b579aae869a",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/quieter.md": {
+    "sha256": "190a4e642ca362d7499f3c3ab123e21f18f75457d11f072b545a183f296e6495",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/region-map.md": {
+    "sha256": "778cedc9199b407d3e23fa1041e38d548b00b1101a33517aa2a2eb299f9d0edc",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/routing.md": {
+    "sha256": "77ae09542fbc10aa4e8b119d6fd19359908a47c13c30068d6a150bfdb50e3e10",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/shape.md": {
+    "sha256": "a55f016c046cb6a27c55bd7f346375aeb506a755c4fbca19a5f92dbd42309c23",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/typeset.md": {
+    "sha256": "442749aed338f51c1a3ccfb182c6ade9b74b90590b67984062ac94a5b100e914",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/reference/visualize.md": {
+    "sha256": "2bcec5b8d22e9f87799529a41b984d27b4379ab1b70e1dd4f63b6d6390275730",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/command-metadata.json": {
+    "sha256": "e8720f3aa41135211cc58cc299a39eeda86c75651f4279cc1ede8db10dcc0584",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/data/font-index-failures.json": {
+    "sha256": "835f19a0a3812f3652dd6979a2ce5597f654fd01f26e1b420b92d5f42b997ce4",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/data/font-index.json": {
+    "sha256": "47edbdfaf27073c47033d1ac7dfee881be49e2dcbda7671d1157300481dde6da",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/impeccable": {
+    "sha256": "39d9600489073e227e4f4d55c451ce4252a6632ed7ae37923efbbcbc91f16d07",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/impeccable.cmd": {
+    "sha256": "69cad1ae7355825ef320ac9638a1c9675ba9fda01c9a0fa12244cc4a1973e550",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/live-browser-dom.js": {
+    "sha256": "24f09f2597b9b55a1e2c4acd2ae5c95db5c8615cfc20aa07d1a3950538ad5c4a",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/live-browser-ignores.js": {
+    "sha256": "c1cb6877ca99a0c1b38ba0c7d59f32702d3022f6821d8045f7133f7c40b6362f",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/live-browser-session.js": {
+    "sha256": "42831c3cd874346d8e7f120808d91e6ed3cda5c3eca6eefd76b126659536bc87",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/live-browser.js": {
+    "sha256": "d7f1ee3fdfc423e90268e9c666dce61b2180b62431dbb6ecfc48bca65398a1f8",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/modern-screenshot.umd.js": {
+    "sha256": "bb36665889124a0b6e15f16045265737449c3bdcf2712cdb08af3cfa01563e2b",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/scripts/VERSION": {
+    "sha256": "66d60356172ccafdd334fca9bf33243c8409216a733dcde0d66a24fd70ee8132",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/impeccable/SKILL.md": {
+    "sha256": "e1a965737ca8255934bad358d5cfb8788ce013867910efd97d1daac68375e941",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/pbakaus/impeccable/tree/ffeda44b00b1e39bd901621dcd3a7e44ba184ce1"
+  },
+  ".agents/skills/ponytail/LICENSE": {
+    "sha256": "fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/DietrichGebert/ponytail/tree/552acd5efd0aeae2583a12efe39373d2f076f25e"
+  },
+  ".agents/skills/ponytail/SKILL.md": {
+    "sha256": "1316a2f3f95741d2300b116fe0c2d81ce4a9568656ed0a62643f54aaf09957f2",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/DietrichGebert/ponytail/tree/552acd5efd0aeae2583a12efe39373d2f076f25e"
+  },
+  ".agents/skills/ponytail-audit/LICENSE": {
+    "sha256": "fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/DietrichGebert/ponytail/tree/552acd5efd0aeae2583a12efe39373d2f076f25e"
+  },
+  ".agents/skills/ponytail-audit/SKILL.md": {
+    "sha256": "38c209f3b56c8c8291bd00cf91da1ee9048ddafb1b5e7f838c1e1b81822e4023",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/DietrichGebert/ponytail/tree/552acd5efd0aeae2583a12efe39373d2f076f25e"
+  },
+  ".agents/skills/ponytail-review/LICENSE": {
+    "sha256": "fb1bc6909ac3ef82d5c22106e32ef682b0cff66788fa915fb9b53b15c9d2f3ab",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/DietrichGebert/ponytail/tree/552acd5efd0aeae2583a12efe39373d2f076f25e"
+  },
+  ".agents/skills/ponytail-review/SKILL.md": {
+    "sha256": "4b29656469baa5df3513a1557197ec8053162c6a54c166c871c57061e37a8ebb",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/DietrichGebert/ponytail/tree/552acd5efd0aeae2583a12efe39373d2f076f25e"
+  },
+  ".agents/skills/test-driven-development/LICENSE": {
+    "sha256": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/test-driven-development/SKILL.md": {
+    "sha256": "64b03fce4aee5a97a93160cea8111f3ba13a17b7c001db4bd5836d67fd10705d",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/test-driven-development/writing-good-tests.md": {
+    "sha256": "51471c853306ff92ca8bb41dcaea05f31c0e46b03651f8f3c99754b7172f4ae1",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/condition-based-waiting-example.ts": {
+    "sha256": "40ae5ebe497fdf310200e43fe986552546d0a22837c0d39e855db1cfd33eb88e",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/condition-based-waiting.md": {
+    "sha256": "e89fec8400d6cd50f43407cec9fab50976ba4d55d0ec2eb51c0bd68036b54c26",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/CREATION-LOG.md": {
+    "sha256": "c24733a5b1821bd6bed1fc950261f0b9f4e90097e0bbb96459d8179713730789",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/defense-in-depth.md": {
+    "sha256": "1e175fb86fc357e58c6aebf5441e481e1b7868b4380c0456b63a17eefbd18ba7",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/find-polluter.sh": {
+    "sha256": "dd7b8f13c4cc2a24b33ff87b18da9248f3e1c80a085c3316224f69ff0fa5c43c",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/LICENSE": {
+    "sha256": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/root-cause-tracing.md": {
+    "sha256": "75b933b6a8c40bdb2031b10f21654395b56ec6ab6bc7b018c18d3fe57aeb7fb8",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/SKILL.md": {
+    "sha256": "808fc5717aa88ad65efff312b11c186294d3e6ee301afb584e2f86599b137787",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/test-academic.md": {
+    "sha256": "fe2ba480d78ac0d686dc025f41c2a32a43d642bf533f91b0c6053a04d35d6486",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/test-pressure-1.md": {
+    "sha256": "0b6a915db0054577819834c79be9eb614e97bddba10d73768e1fbe91cfed048a",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/test-pressure-2.md": {
+    "sha256": "b2030aeffba07050e8ad573ddf87486457c4a016a786bb326235bebd856f2016",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/systematic-debugging/test-pressure-3.md": {
+    "sha256": "96b50a52e2c7989c9cf20fb752c47c1e9a3a70dc362f8f7989f8f5b64dac7708",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/verification-before-completion/LICENSE": {
+    "sha256": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/verification-before-completion/SKILL.md": {
+    "sha256": "2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/obra/superpowers/tree/8ca22dba9a94f28898bbce59f2537ff4d87c747d"
+  },
+  ".agents/skills/codebase-design/agents/openai.yaml": {
+    "sha256": "edebc9e4fcfe102114012575eaa9600b9b5fd08c311664f389c36e7bc717740f",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/mattpocock/skills/tree/f3fc5632f401156837ee3872f14fe33ccf1024ea"
+  },
+  ".agents/skills/codebase-design/DEEPENING.md": {
+    "sha256": "f3dd099ce99289bd213914d8ee3e2429b78309c3957ca4583f7659551b1d53c1",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/mattpocock/skills/tree/f3fc5632f401156837ee3872f14fe33ccf1024ea"
+  },
+  ".agents/skills/codebase-design/DESIGN-IT-TWICE.md": {
+    "sha256": "52b52e75655a27aea59c6966b410bac82448968ad46ef1ebb9f07c274e3ae010",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/mattpocock/skills/tree/f3fc5632f401156837ee3872f14fe33ccf1024ea"
+  },
+  ".agents/skills/codebase-design/LICENSE": {
+    "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/mattpocock/skills/tree/f3fc5632f401156837ee3872f14fe33ccf1024ea"
+  },
+  ".agents/skills/codebase-design/SKILL.md": {
+    "sha256": "2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/mattpocock/skills/tree/f3fc5632f401156837ee3872f14fe33ccf1024ea"
+  },
+  ".agents/skills/python-testing/LICENSE": {
+    "sha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/affaan-m/ECC/tree/ef648e01899ba3e8dc6371642deaaf64b4477775"
+  },
+  ".agents/skills/python-testing/SKILL.md": {
+    "sha256": "b9f7a158dae3b6c06c9c75ffe84e27a1edc86092d2afdcb39e96fc2569902eb7",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/affaan-m/ECC/tree/ef648e01899ba3e8dc6371642deaaf64b4477775"
+  },
+  ".agents/skills/e2e-testing/LICENSE": {
+    "sha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/affaan-m/ECC/tree/ef648e01899ba3e8dc6371642deaaf64b4477775"
+  },
+  ".agents/skills/e2e-testing/SKILL.md": {
+    "sha256": "b0e00e7e17cb259101139900816c5528aed18dd10bcf5f9cb42cfc35baf8a755",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/affaan-m/ECC/tree/ef648e01899ba3e8dc6371642deaaf64b4477775"
+  },
+  ".agents/skills/frontend-design-direction/LICENSE": {
+    "sha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/affaan-m/ECC/tree/ef648e01899ba3e8dc6371642deaaf64b4477775"
+  },
+  ".agents/skills/frontend-design-direction/SKILL.md": {
+    "sha256": "fa254de821f708e5791c4c80d30309ac7da89c2888301e967becb3b21ac73331",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ],
+    "origin": "https://github.com/affaan-m/ECC/tree/ef648e01899ba3e8dc6371642deaaf64b4477775"
+  },
+  "runtime/_ctypes.pyd": {
+    "sha256": "fd4847b99cd504a66bdc4739f15181b562774e6736bb88775880b073276dede1",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/_socket.pyd": {
+    "sha256": "65caaa6f35c329d901ba3f3d9f7fc4d7443dcde89907dccbd6748786cc517476",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/libffi-8.dll": {
+    "sha256": "eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/LICENSE.txt": {
+    "sha256": "935cf13e19f8c31b497d20b05d73623431a226b230c3599bc30fa3348979bc68",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/python.exe": {
+    "sha256": "3adbbf2af609e206e3ca18cd55fc7c4b52f5c8bb8218dd99fd5a9e50d7a193cd",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/python3.dll": {
+    "sha256": "f3d0cd260a46a9617a8b1d4d5e8703278478c22a910165bffb4e4ddf6562d93f",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/python314._pth": {
+    "sha256": "10d93ad1f810bd377d879c439462e352c78b973960bdefd35c6dbe3a47360e9b",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/python314.dll": {
+    "sha256": "18310593c50ad109fc5c95db1fd5c92ecec9e1bfc66c976df9fc11dd62616d5a",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/python314.zip": {
+    "sha256": "c357999186a62eb8d88624e0487138684ea26ab236fd8fa0db589a00235b7bf3",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/select.pyd": {
+    "sha256": "8c3ee20776d8eb7c441f2006ed46b9ba932060c6b66df4c1e156dcf7738d56ce",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "runtime/unicodedata.pyd": {
+    "sha256": "a7a2bfeed5d0480d8c458b3a61ee32c478ae10c694e8be61c3ba0e8cc2a6e1c6",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "dependencies/licenses/cpython-LICENSE.txt": {
+    "sha256": "935cf13e19f8c31b497d20b05d73623431a226b230c3599bc30fa3348979bc68",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "dependencies/licenses/libffi-LICENSE.txt": {
+    "sha256": "2c9c2acb9743e6b007b91350475308aee44691d96aa20eacef8e199988c8c388",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "dependencies/licenses/vigemclient-LICENSE.txt": {
+    "sha256": "445b3bccd103d39cab7e9b276dd966d60269cf5c44b4b8a118e48bc4c7c4f0db",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "dependencies/licenses/zlib-ng-LICENSE.md": {
+    "sha256": "6c9f0d975b41afaa34d22f55bb8986ce69e5cb7ad327cb2b28820cd425edf5ee",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "dependencies/ViGEmClient.dll": {
+    "sha256": "2bf0cb1d809039573c922737d298a1653d4dbc61408060ff45a9bcfde82e97d2",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  },
+  "dependencies/licenses/vigemclient-NOTICE.txt": {
+    "sha256": "2a25827482823278e275d650cb51159fd0c9890f24db7cf2cc68d254c2119a4b",
+    "origin": "Pinned dependency; dependencies/manifest.json",
+    "categories": [
+      "personal Windows path",
+      "personal Unix path"
+    ]
+  }
+}
