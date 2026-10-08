@@ -147,17 +147,21 @@ def test_save_success_names_the_visible_mode(tmp_path,mode,label):
         assert code==200 and json.loads(body)['message']==f'Saved. Run emulate.cmd to start {label}.'
 
 
-@pytest.mark.parametrize('name',['sidestick.png','quadrant.png','sidestick-grip.png','quadrant-grip.png'])
-def test_device_photos_only_serve_allowlisted_private_images(tmp_path,name):
+@pytest.mark.parametrize('name',['sidestick.svg','quadrant.svg','sidestick-grip.svg','quadrant-grip.svg'])
+def test_device_vectors_load_without_private_art_and_only_allow_fixed_routes(tmp_path,name):
+    import xml.etree.ElementTree as ET
     images=tmp_path/'.local'/'device-images';images.mkdir(parents=True)
     (images/'private.png').write_bytes(b'private')
+    (images/'sidestick.png').write_bytes(b'private photo')
     with live(tmp_path,{'layouts':[],'suggested':None,'ready':True}) as (server,conn):
-        code,body,_=http(server,conn,'GET','device/'+name)
-        assert code==404 and json.loads(body)=={'message':'Not found.'}
-        (images/name).write_bytes(b'fixture image')
         code,body,headers=http(server,conn,'GET','device/'+name)
-        assert code==200 and body==b'fixture image'
-        assert headers['Content-Type']=='image/png'
-        for route in ('device/private.png','device/../config.json','device/%2e%2e/config.json','device/sidestick.webp'):
+        assert code==200
+        assert headers['Content-Type']=='image/svg+xml; charset=utf-8'
+        svg=ET.fromstring(body)
+        assert svg.tag=='{http://www.w3.org/2000/svg}svg' and svg.get('viewBox')
+        assert any(e.tag.endswith('path') for e in svg.iter())
+        assert not any(e.tag.split('}')[-1] in ('image','script','foreignObject') for e in svg.iter())
+        assert not any(k.endswith('href') and not v.startswith('#') for e in svg.iter() for k,v in e.attrib.items())
+        for route in ('device/private.png','device/sidestick.png','device/../config.json','device/%2e%2e/config.json','device/private.svg','device/sidestick.webp'):
             code,body,_=http(server,conn,'GET',route)
             assert code==404 and json.loads(body)=={'message':'Not found.'}

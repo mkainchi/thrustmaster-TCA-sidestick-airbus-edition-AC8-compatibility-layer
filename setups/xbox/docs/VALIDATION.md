@@ -11,12 +11,12 @@ Run every command in [Develop and verify](../README.md#develop-and-verify).
 | pytest | All first-party Python in `app/` and `tools/`, including unimported modules; 100% lines and branches, no coverage-ignore directives |
 | Vitest | All first-party application/tool JavaScript, including boot, configuration and unimported modules; 100% statements, lines, functions and branches |
 | Negative coverage probes | Missing branches and unimported modules must fail the gates |
-| Playwright | Real local server, isolated settings, synthetic controller/dependency data and image fixtures |
+| Playwright | Real local server, isolated settings, synthetic controller/dependency data and shipped SVG assets |
 | Release and Windows CI | Coverage, browser, naming, privacy and license gates before allowlisted packaging |
 
 Unit boundaries exercise Windows APIs, profiles, translation, migration, atomic saves, dependencies, session ownership, startup, disconnects and cleanup failures. Browser scenarios check mode/layout consent, independent mappings, capture, optional calibration, overlays/overview, unsaved edits, save/load/dependency recovery, request protections, contrast, focus and reflow.
 
-Synthetic input and images do not prove hardware behavior. Development skills, private reports and browser binaries are excluded from releases.
+Synthetic input and rendered diagrams do not prove hardware behavior. Development skills, private reports and browser binaries are excluded from releases.
 
 ## Runtime checks
 
@@ -27,9 +27,11 @@ Synthetic input and images do not prove hardware behavior. Development skills, p
 - Disconnects are checked every second; keyboard mode also monitors TARGET's readiness heartbeat.
 - Forced termination, power loss or driver failure can prevent cooperative cleanup. Stop the profile in TARGET and reconnect the devices.
 
-## Photo inspection
+## Device diagram inspection
 
-Official private photos/manual insets were visually compared with mapping diagrams: sidestick L/R numbering, grip buttons 1/2 separate from POV, quadrant shared selector 7/8 and TARGET detent states 9–16.
+Four original SVG diagrams were rendered and visually compared against private `sidestick.png`, `quadrant.png`, `sidestick-grip.png` and `quadrant-grip.png` references using Pixel2Motion's overlay workflow. Check silhouette, proportions, control centers and enlarged smooth edges. Logos, photographic texture, manual annotations and hands are deliberately omitted; numbers remain interactive HTML overlays.
+
+Preserve sidestick L/R numbering, grip buttons 1/2 separate from POV, quadrant shared selector 7/8 and TARGET detent states 9–16. Server/browser checks confirm that all four SVGs load without private images and that unauthorized asset paths stay inaccessible.
 
 Visual agreement does not prove firmware numbering or live highlights. Keep source URLs, hashes and notes in ignored `.local/`; perform the physical checks below.
 
@@ -64,7 +66,7 @@ Confirm a new Windows/XInput Xbox controller, then verify:
 
 ### 3. Check physical numbering
 
-Compare each physical control with its live photo highlight, including switches/detents and assigned/unassigned wingman buttons. Record firmware differences privately; do not publish unique hardware IDs.
+Compare each physical control with its live diagram highlight, including switches/detents and assigned/unassigned wingman buttons. Record firmware differences privately; do not publish unique hardware IDs.
 
 ### 4. Check keyboard output
 

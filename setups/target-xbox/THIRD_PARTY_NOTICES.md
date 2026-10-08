@@ -1,12 +1,12 @@
 # Third-party notices and redistribution
 
-Original application code, documentation and button-overlay code are licensed under the root [MIT license](LICENSE). Trademarks remain their owners' property. Third-party dependencies retain their licenses and copyright notices; licensed copyrighted open-source material is permitted. No proprietary TARGET headers/binaries/manuals, game assets or manufacturer artwork are shipped.
+Original application code, documentation, authored SVG device diagrams and button-overlay code are licensed under the root [MIT license](LICENSE). The diagrams depict measured device geometry using original primitives and paths; they contain no photographic pixels or manufacturer logos. Trademarks remain their owners' property. Third-party dependencies retain their licenses and copyright notices; licensed copyrighted open-source material is permitted. No proprietary TARGET headers/binaries/manuals, game assets or manufacturer artwork are shipped.
 
 ## Private device references
 
-Official Thrustmaster product photos and cropped button-mapping illustrations from the device manuals remain proprietary. The [official terms, section 2](https://www.thrustmaster.com/en-us/general-terms-and-conditions-of-use/) permit personal, non-commercial download to one computer; redistribution requires express prior written consent. Optional reference images are stored only in ignored `.local/device-images/` and served through four fixed local routes.
+Official Thrustmaster product photos and cropped button-mapping illustrations from the device manuals remain proprietary. The [official terms, section 2](https://www.thrustmaster.com/en-us/general-terms-and-conditions-of-use/) permit personal, non-commercial download to one computer; redistribution requires express prior written consent. Comparison references are stored only in ignored `.local/device-images/`; the configuration server serves the four authored SVGs instead.
 
-They are not covered by this project's MIT license and are excluded from every public package and archive. The mapping selector and overview work without them. Private source URLs, coordinates and image hashes are retained beside the images.
+The manufacturer references are not covered by this project's MIT license and are excluded from every public package and archive. Device diagrams, the selector and overview work without them. Private source URLs, coordinates and image hashes are retained beside the images. Changing a manufacturer's raster to SVG would not grant redistribution rights; the shipped drawings use authored geometry rather than embedded or auto-traced artwork.
 
 ## Gamer bundle
 

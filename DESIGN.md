@@ -12,7 +12,7 @@ Use Impeccable's Operate mode: familiar controls and a direct path from mode cho
 
 ## Device references
 
-Place numbered official photos beside the editor; load photos/manual insets offline from private `.local/`. Keep the selector and overview usable without images.
+Place numbered original SVG diagrams beside the editor. Draw measured device geometry from private photo/manual references, preserving proportions, visible controls and grip views. Ship self-contained vectors in `app/web/device/`; omit embedded rasters, logos and external requests. Keep the selector and overview usable if a diagram fails to load.
 
 Follow official mapping diagrams, including L/R sidestick numbering and separate grip views. Distinguish feature callouts, physical buttons, POV and virtual detents.
 
@@ -20,4 +20,4 @@ Follow official mapping diagrams, including L/R sidestick numbering and separate
 
 Use native controls, a restrained dark workspace, system fonts, one accent and semantic color tokens.
 
-On narrow windows, put editing before optional photos. Preserve 44px targets in labeled scrolling regions and usable focus/controls at 200% zoom. Avoid decorative animation, external fonts and external runtime assets.
+On narrow windows, put editing before optional diagrams. Preserve 44px targets in labeled scrolling regions and usable focus/controls at 200% zoom. Avoid decorative animation, external fonts and external runtime assets.

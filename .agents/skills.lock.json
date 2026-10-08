@@ -184,5 +184,32 @@
       "LICENSE": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
       "SKILL.md": "fa254de821f708e5791c4c80d30309ac7da89c2888301e967becb3b21ac73331"
     }
+  },
+  {
+    "name": "pixel2motion",
+    "repository": "https://github.com/nolangz/pixel2motion",
+    "commit": "e9faedb28930df0da2acf17da00c80730a78cfe8",
+    "license": "MIT",
+    "files": {
+      "SKILL.md": "db12866ecbaf5aabbf72793c26e91e1d2f7f80807207fb47d394ff54acede4cb",
+      "LICENSE": "87347cdc59b13ed9f3720a9fc0b92017bb6564740ca01c3098246d914f2ea3fa",
+      "agents/openai.yaml": "f1d0f4ab4181016015475caeb2a414dca499c5d79f9f059b9eb7557998c13ee3",
+      "references/html-delivery-template.md": "ad4f7d71ea0e996fd3553218e68acbaafdab5ed18de4405fef71891ad3b9ea73",
+      "references/motion-personality.md": "4a0044f2c499244f3b8d6b2b41ae3282ce7c8571044f483d364612b60ec79825",
+      "references/reveal-patterns.md": "dfa3883ac246305ff445521234ea2c64356ebf843cf4ce22c9b76d43713da78a",
+      "references/ribbon-fitting.md": "e78bc3f3d44488d7bd562f353f42b651b91a0f2b777908286ed7c13519761b03",
+      "references/twelve-principles-for-logos.md": "a61e48c4aa10e493ac09e88ca9bf46cc8b23abf2219ab107aec644616076eb0c",
+      "scripts/raster_logo_trace.py": "07fb013673d53516b6a402403b3b163648a39349c09151a1fc66386112ebba58",
+      "scripts/render_overlay.py": "605558d2f761a78ad3b21bc7f2d1419834ac959d0ddd568914860b3e7e5b6d5f",
+      "scripts/svg_path_audit.py": "db9a67d118bca7b09871e938ea483f288dabcf056b15845806fc02f86478a6b5",
+      "scripts/overlay_progress_strip.py": "061549bca1785055756b02404bd990631736ad313eb82c2382012f054b98e708",
+      "scripts/animate_svg_html.py": "a40f3a14887087361a5e4d7f58f73c16d449a010f7122aa808309142ef15bd51",
+      "scripts/animate_svg_showcase.py": "20e83724dac8ac5e3dabfa205859a1ac79b54f0d8f0c07c65345cc4b3c2f3117",
+      "scripts/capture_motion_frames.py": "43ca7396e4416774d3eb013af070312a68037f4c3480427976c940d7c4c2f3f9",
+      "scripts/export_claude_videos.mjs": "3aa1b9e7a7492f4fd948029005ade716a139f6fdfc3f21fbec961ad7ee93a9b0",
+      "scripts/fit_ribbon_centerline.py": "a19abed53ab9c21da62925a5a03c07c8af7cf77c3f8e38e72edc6bdca3559ccc",
+      "scripts/probe_motion_continuity.py": "88d6819e1d5a84f671be8804b79f78d3874abf229bc285a4f66798a5a8ef0cec",
+      "scripts/svg_to_js_html.py": "ffe3c27a8f16efe8a634297ff9943abbf3bf173db3c56246f22dc0e8dece6c01"
+    }
   }
 ]

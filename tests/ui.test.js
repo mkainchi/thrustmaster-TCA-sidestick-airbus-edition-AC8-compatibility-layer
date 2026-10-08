@@ -167,7 +167,7 @@ it('reveals and focuses the exact field reported by save validation',async()=>{
   expect(document.activeElement).toBe(t.$('poll_hz'));
 });
 
-it('keeps device selection and handedness usable when a private photo is unavailable',async()=>{
+it('keeps device selection and handedness usable when a diagram is unavailable',async()=>{
   const t=await mount('xbox');
   t.$('show-quadrant').click();expect(t.$('control').value).toBe('buttons:q1');
   expect(t.$('stick-photo').hidden).toBe(true);

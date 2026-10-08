@@ -85,16 +85,11 @@ def create_server(root, fixture=None, initial_mode=None):
                     else:
                         mode = store.load()['preferred_mode']
                         self.json(200, {'available': True, 'state': inputs.snapshot('target-xbox' if mode == 'target-xbox' and (store.local / 'session.json').exists() else 'xbox')})
-                elif route in ('', 'boot.js', 'ui.js', 'logic.js', 'style.css'):
+                elif route in ('', 'boot.js', 'ui.js', 'logic.js', 'style.css',
+                               'device/sidestick.svg', 'device/quadrant.svg', 'device/sidestick-grip.svg', 'device/quadrant-grip.svg'):
                     name = 'index.html' if route == '' else route
-                    mime = {'html': 'text/html', 'js': 'text/javascript', 'css': 'text/css'}[name.rsplit('.', 1)[1]]
+                    mime = {'html': 'text/html', 'js': 'text/javascript', 'css': 'text/css', 'svg': 'image/svg+xml'}[name.rsplit('.', 1)[1]]
                     self.reply(200, (WEB / name).read_bytes(), mime + '; charset=utf-8')
-                elif route in ('device/sidestick.png', 'device/quadrant.png', 'device/sidestick-grip.png', 'device/quadrant-grip.png'):
-                    photo = store.local / 'device-images' / route.split('/')[1]
-                    if photo.is_file():
-                        self.reply(200, photo.read_bytes(), 'image/png')
-                    else:
-                        self.json(404, {'message': 'Not found.'})
                 else:
                     self.json(404, {'message': 'Not found.'})
             except (OSError, ValueError, RuntimeError):

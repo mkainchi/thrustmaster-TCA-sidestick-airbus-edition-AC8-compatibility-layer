@@ -9,9 +9,6 @@ const test = base.extend({editor: async({page}, use) => {
   const fixture = join(root, 'fixture.json');
   const data = {layouts: [{id:'00000409',label:'QWERTY · English'}, {id:'0000040c',label:'AZERTY · French'}, {id:'00000407',label:'QWERTZ · German'}], suggested:'0000040c', ready:false};
   await writeFile(fixture, JSON.stringify(data));
-  await mkdir(join(root,'.local','device-images'),{recursive:true});
-  const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jvz0AAAAASUVORK5CYII=','base64');
-  for(const image of ['sidestick','quadrant','sidestick-grip','quadrant-grip']) await writeFile(join(root,'.local','device-images',image+'.png'),pixel);
   const python = process.env.TCA_TEST_PYTHON || '.local/dev-venv/Scripts/python.exe';
   const child = spawn(python, ['-B', '-m', 'app', 'configure', '--root', root, '--test-fixture', fixture, '--no-browser'], {cwd:process.cwd(), windowsHide:true});
   let output='', errors='';
@@ -35,6 +32,16 @@ test('first run does not assume a mode or the suggested French layout', async({p
   await expect(page.getByRole('button',{name:'Save configuration'})).toBeDisabled();
   await expect(page.locator('#layout-help')).toContainText('AZERTY');
   await expect(page.getByRole('button',{name:'Sidestick button 1',exact:true})).toBeVisible();
+  expect(editor.external).toEqual([]);
+});
+
+test('all device diagrams render offline without private reference images',async({page,editor})=>{
+  await page.getByLabel('Preferred mode').selectOption('xbox');
+  await expect.poll(()=>page.locator('.photo-frame img').evaluateAll(images=>images.map(image=>[image.naturalWidth,image.naturalHeight]))).toEqual([[1920,1080],[152,125],[1920,1080],[145,115]]);
+  await expect(page.getByRole('button',{name:'Sidestick button 3',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Quadrant',exact:true}).click();
+  await page.getByRole('button',{name:'Quadrant button 2',exact:true}).click();
+  await expect(page.locator('#control')).toHaveValue('buttons:q2');
   expect(editor.external).toEqual([]);
 });
 
@@ -195,7 +202,7 @@ test('keyboard focus, text contrast and 320px layout remain usable',async({page,
   expect(editor.external).toEqual([]);
 });
 
-test('a narrow binding edit can be saved without opening photos or calibration',async({page,editor})=>{
+test('a narrow binding edit can be saved without opening diagrams or calibration',async({page,editor})=>{
   await page.setViewportSize({width:390,height:844});await page.reload();
   await page.getByLabel('Preferred mode').selectOption('xbox');
   await expect(page.locator('#photo-panel')).not.toHaveAttribute('open','');

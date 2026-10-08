@@ -33,7 +33,7 @@ Configuration needs no administrator rights; driver installation may. The applic
 
 ## Edit mappings
 
-Choose a control in the selector, select **Edit** in **Mapping overview**, or activate a photo number with the mouse, Enter or Space. Binding, inline errors and **Save configuration** stay together.
+Choose a control in the selector, select **Edit** in **Mapping overview**, or activate a diagram number with the mouse, Enter or Space. Binding, inline errors and **Save configuration** stay together.
 
 - **Mapping overview** shows outputs by device and keyboard action.
 - **Axes and calibration** holds optional input adjustments.
@@ -58,9 +58,9 @@ No QWERTY or AZERTY layout is assumed. Typed characters use the selected layout;
 
 Named keys include `Space`, `Tab`, `Enter`, arrow keys, `F1`–`F12` and `Numpad0`–`Numpad9`. Leave a button blank to unassign it. Unsupported characters, input-method-editor (IME) input and ambiguous capture receive inline errors.
 
-### Device numbering and optional photos
+### Device numbering and diagrams
 
-Match the sidestick photo's L/R setting to the selector underneath the device. Grip caps may differ from the stock photo. Live highlights help verify numbering; switches and detents can stay pressed.
+Match the sidestick diagram's L/R setting to the selector underneath the device. Swappable grip caps may differ from the drawing. Live highlights help verify numbering; switches and detents can stay pressed.
 
 | Device | Controls |
 | --- | --- |
@@ -69,7 +69,7 @@ Match the sidestick photo's L/R setting to the selector underneath the device. G
 
 The editor uses one-based numbers; it converts TARGET's zero-based script indices. Combined output assigns 1–16 to the stick and 17–32 to quadrant controls 1–16.
 
-Photos and manual grip insets are private references, excluded from shared packages. Each package reads `sidestick.png`, `quadrant.png`, `sidestick-grip.png` and `quadrant-grip.png` from its own `.local/device-images/`. Official support links beside the views provide source references. Without images, use the selector or overview. See [artwork terms](THIRD_PARTY_NOTICES.md#private-device-references).
+Each package includes four original SVG diagrams: sidestick and quadrant top views plus two grip views. They use measured geometry, simplified materials and no manufacturer logos. Official photos/manual crops remain private comparison references; no private image files are needed to configure controls. If a diagram fails to load, use the selector or overview. Official support links provide numbering references. See [artwork terms](THIRD_PARTY_NOTICES.md#private-device-references) and [SVG reconstruction workflow](docs/SKILLS.md#reconstruct-device-svgs).
 
 ## Recover from startup or input problems
 

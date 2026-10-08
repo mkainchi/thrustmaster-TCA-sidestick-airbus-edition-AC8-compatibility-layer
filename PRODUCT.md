@@ -25,7 +25,7 @@ Configuration runs on loopback; TARGET and system drivers are installed separate
 - Plain HTML/CSS/JavaScript and Python.
 - Explicit installed keyboard-layout choice; no French or English default.
 - No telemetry, personal hardware inventory, automatic driver installation, bundled proprietary software or copied game assets.
-- Private offline device photos/manual insets; no artwork redistribution without written permission.
+- Offline original SVG device diagrams; manufacturer photos/manuals remain private comparison references.
 - Only verified, licensed dependencies in releases.
 
 ## Evidence on Hand
