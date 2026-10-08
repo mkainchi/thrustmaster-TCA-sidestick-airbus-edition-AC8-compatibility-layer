@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "files": {
+    "runtime/_ctypes.pyd": "fd4847b99cd504a66bdc4739f15181b562774e6736bb88775880b073276dede1",
+    "runtime/_socket.pyd": "65caaa6f35c329d901ba3f3d9f7fc4d7443dcde89907dccbd6748786cc517476",
+    "runtime/libffi-8.dll": "eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
+    "runtime/LICENSE.txt": "935cf13e19f8c31b497d20b05d73623431a226b230c3599bc30fa3348979bc68",
+    "runtime/python.exe": "3adbbf2af609e206e3ca18cd55fc7c4b52f5c8bb8218dd99fd5a9e50d7a193cd",
+    "runtime/python3.dll": "f3d0cd260a46a9617a8b1d4d5e8703278478c22a910165bffb4e4ddf6562d93f",
+    "runtime/python314._pth": "10d93ad1f810bd377d879c439462e352c78b973960bdefd35c6dbe3a47360e9b",
+    "runtime/python314.dll": "18310593c50ad109fc5c95db1fd5c92ecec9e1bfc66c976df9fc11dd62616d5a",
+    "runtime/python314.zip": "c357999186a62eb8d88624e0487138684ea26ab236fd8fa0db589a00235b7bf3",
+    "runtime/select.pyd": "8c3ee20776d8eb7c441f2006ed46b9ba932060c6b66df4c1e156dcf7738d56ce",
+    "runtime/unicodedata.pyd": "a7a2bfeed5d0480d8c458b3a61ee32c478ae10c694e8be61c3ba0e8cc2a6e1c6",
+    "dependencies/licenses/cpython-LICENSE.txt": "935cf13e19f8c31b497d20b05d73623431a226b230c3599bc30fa3348979bc68",
+    "dependencies/licenses/libffi-LICENSE.txt": "2c9c2acb9743e6b007b91350475308aee44691d96aa20eacef8e199988c8c388",
+    "dependencies/licenses/zlib-ng-LICENSE.md": "6c9f0d975b41afaa34d22f55bb8986ce69e5cb7ad327cb2b28820cd425edf5ee"
+  },
+  "components": [
+    {
+      "name": "cpython",
+      "version": "3.14.5",
+      "license": "PSF-2.0",
+      "origin": "https://www.python.org/ftp/python/3.14.5/python-3.14.5-embed-amd64.zip",
+      "archive_sha256": "ba6bd811c4eedb19195cf275770ef127e893d63701e24152606e2cb76f6d876a",
+      "notice": "dependencies/licenses/cpython-LICENSE.txt",
+      "files": [
+        "runtime/_ctypes.pyd",
+        "runtime/_socket.pyd",
+        "runtime/LICENSE.txt",
+        "runtime/python.exe",
+        "runtime/python3.dll",
+        "runtime/python314._pth",
+        "runtime/python314.dll",
+        "runtime/python314.zip",
+        "runtime/select.pyd",
+        "runtime/unicodedata.pyd",
+        "dependencies/licenses/cpython-LICENSE.txt"
+      ]
+    },
+    {
+      "name": "libffi",
+      "version": "3.4.4",
+      "license": "MIT",
+      "origin": "https://github.com/python/cpython/blob/v3.14.5/PCbuild/python.props",
+      "notice": "dependencies/licenses/libffi-LICENSE.txt",
+      "files": [
+        "runtime/libffi-8.dll",
+        "dependencies/licenses/libffi-LICENSE.txt"
+      ],
+      "license_origin": "https://raw.githubusercontent.com/libffi/libffi/v3.4.4/LICENSE"
+    },
+    {
+      "name": "zlib-ng",
+      "version": "2.2.4",
+      "license": "Zlib",
+      "origin": "https://github.com/zlib-ng/zlib-ng/tree/2.2.4",
+      "notice": "dependencies/licenses/zlib-ng-LICENSE.md",
+      "files": [
+        "runtime/python314.dll",
+        "dependencies/licenses/zlib-ng-LICENSE.md"
+      ],
+      "license_origin": "https://raw.githubusercontent.com/zlib-ng/zlib-ng/2.2.4/LICENSE.md"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+// TCA Airbus -> TARGET Combined -> Xbox bridge -> ACE COMBAT 8.
+// Run this file in TARGET Script Editor, then Start_TARGET_Xbox_Bridge.cmd.
+// TARGET emits DirectInput only; the companion bridge supplies Xbox/XInput.
+include "target.tmh"
+
+int ConfigureCombined()
+{
+    // Exactly four axes, in SDL order X/Y/Z/Rz, and 18 independent buttons.
+    virtualj.ButtonsNumber = 18;
+    virtualj.HatPresent = 1;
+    virtualj.AxisX = 1;
+    virtualj.AxisY = 1;
+    virtualj.AxisZ = 1;
+    virtualj.AxisRx = 0;
+    virtualj.AxisRy = 0;
+    virtualj.AxisRz = 1;
+    virtualj.AxisThrottle = 0;
+    virtualj.AxisSlider1 = 0;
+    virtualj.AxisSlider2 = 0;
+    virtualj.AxisSlider3 = 0;
+    virtualj.AxisSlider4 = 0;
+}
+
+int main()
+{
+    Configure(&Joystick, MODE_EXCLUDED);
+    Configure(&JoystickF18, MODE_EXCLUDED);
+    Configure(&Throttle, MODE_EXCLUDED);
+    Configure(&HCougar, MODE_EXCLUDED);
+    Configure(&T16000, MODE_EXCLUDED);
+    Configure(&T16000L, MODE_EXCLUDED);
+    Configure(&TWCSThrottle, MODE_EXCLUDED);
+    Configure(&LMFD, MODE_EXCLUDED);
+    Configure(&RMFD, MODE_EXCLUDED);
+    Configure(&A320Copilot, MODE_EXCLUDED);
+    Configure(&TCAQuadrant34, MODE_EXCLUDED);
+    Configure(&TFRPRudder, MODE_EXCLUDED);
+    Configure(&TFRPHARudder, MODE_EXCLUDED);
+    Configure(&TCAQBoeing12, MODE_EXCLUDED);
+    Configure(&TCAQBoeing34, MODE_EXCLUDED);
+    Configure(&TCAYokeBoeing, MODE_EXCLUDED);
+    Configure(&ViperTQS, MODE_EXCLUDED);
+    Configure(&ViperBBox, MODE_EXCLUDED);
+    Configure(&TCASidestickXPilot, MODE_EXCLUDED);
+    Configure(&TCASidestickXCopilot, MODE_EXCLUDED);
+    Configure(&FarmStickRight, MODE_EXCLUDED);
+    Configure(&FarmStickLeft, MODE_EXCLUDED);
+    Configure(&FarmStickXboxRight, MODE_EXCLUDED);
+    Configure(&FarmStickXboxLeft, MODE_EXCLUDED);
+    Configure(&FarmStickPSRight, MODE_EXCLUDED);
+    Configure(&FarmStickPSLeft, MODE_EXCLUDED);
+    Configure(&AVA_F16, MODE_EXCLUDED);
+    Configure(&AVA_F18, MODE_EXCLUDED);
+    Configure(&AVA_SolR, MODE_EXCLUDED);
+    Configure(&AVA_F16L, MODE_EXCLUDED);
+    Configure(&AVA_F18L, MODE_EXCLUDED);
+    Configure(&AVA_SolRL, MODE_EXCLUDED);
+    Configure(&Sol_F16, MODE_EXCLUDED);
+    Configure(&Sol_F18, MODE_EXCLUDED);
+    Configure(&Sol_SolR, MODE_EXCLUDED);
+    Configure(&Sol_F16L, MODE_EXCLUDED);
+    Configure(&Sol_F18L, MODE_EXCLUDED);
+    Configure(&Sol_SolRL, MODE_EXCLUDED);
+    Configure(&Sol_Throttle, MODE_EXCLUDED);
+    Configure(&Sol_Airbus, MODE_EXCLUDED);
+    Configure(&Sol_AirbusL, MODE_EXCLUDED);
+    Configure(&AVA_Airbus, MODE_EXCLUDED);
+    Configure(&AVA_AirbusL, MODE_EXCLUDED);
+    Configure(&Dragonfly_SolR, MODE_EXCLUDED);
+    Configure(&Dragonfly_SolRL, MODE_EXCLUDED);
+    Configure(&Dragonfly_F16, MODE_EXCLUDED);
+    Configure(&Dragonfly_F16L, MODE_EXCLUDED);
+    Configure(&Dragonfly_F18, MODE_EXCLUDED);
+    Configure(&Dragonfly_F18L, MODE_EXCLUDED);
+    Configure(&Dragonfly_Airbus, MODE_EXCLUDED);
+    Configure(&Dragonfly_AirbusL, MODE_EXCLUDED);
+    ConfigureCombined();
+    if(Init(&EventHandle, CREATE_JOYSTICK)) return 1;
+    if((&A320Pilot == &joy0) | (&TCAQuadrant12 == &joy0))
+    {
+        printf("Connect T.A320 Pilot and TCA Q-Eng 1&2, then run again.%c", 10);
+        Abort();
+    }
+    int i = 0;
+    while(i < 64)
+    {
+        MapKey(&A320Pilot, i, 0);
+        MapKey(&TCAQuadrant12, i, 0);
+        i = i + 1;
+    }
+    i = IN_POSITION_AXES;
+    while(i < IN_POSITION_HAT)
+    {
+        MapAxis(&A320Pilot, i, 0);
+        MapAxis(&TCAQuadrant12, i, 0);
+        i = i + 1;
+    }
+    MapAxis(&A320Pilot, JOYX, DX_X_AXIS);
+    MapAxis(&A320Pilot, JOYY, DX_Y_AXIS);
+    MapAxis(&A320Pilot, RUDDER, DX_ZROT_AXIS);
+    MapAxis(&TCAQuadrant12, QT_LEFT, DX_Z_AXIS);
+    i = 0;
+    while(i < 16)
+    {
+        MapKey(&A320Pilot, i, DX1+i);
+        i = i + 1;
+    }
+    MapKey(&A320Pilot, H1U, DXHATUP);
+    MapKey(&A320Pilot, H1D, DXHATDOWN);
+    MapKey(&A320Pilot, H1L, DXHATLEFT);
+    MapKey(&A320Pilot, H1R, DXHATRIGHT);
+    MapKey(&TCAQuadrant12, QT_BTN1, DX17);
+    MapKey(&TCAQuadrant12, QT_BTN2, DX18);
+    // Initialize axes from physical state, even before the first movement.
+    DefaultMapping(&A320Pilot, JOYX);
+    DefaultMapping(&A320Pilot, JOYY);
+    DefaultMapping(&A320Pilot, RUDDER);
+    DefaultMapping(&TCAQuadrant12, QT_LEFT);
+    VirtualOutput(OUT_TYPE_GAME, OUT_ID_HAT, -1);
+    printf("TARGET Combined profile loaded. Start_TARGET_Xbox_Bridge.cmd next.%c", 10);
+    return 0;
+}
+
+int EventHandle(int type, alias o, int x)
+{
+    DefaultMapping(&o, x);
+}
+
+// Offline validation: compiles and checks descriptor, never initializes HID.
+int ValidateProfile()
+{
+    ConfigureCombined();
+    if(virtualj.ButtonsNumber != 18) return 1;
+    if(!virtualj.AxisX | !virtualj.AxisY | !virtualj.AxisZ | !virtualj.AxisRz) return 2;
+    if(virtualj.AxisRx | virtualj.AxisRy | virtualj.AxisSlider1) return 3;
+    return 0;
+}

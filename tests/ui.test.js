@@ -25,7 +25,7 @@ async function mount(mode=null, suggestion='00000409', active=false) {
   const fetcher=async(url,options)=>{
     const route=url.split('/').pop();
     if(result.failure===route)throw Error('server unavailable');
-    if(route==='save'){result.saves.push(JSON.parse(options.body));return{ok:result.saveError===undefined,json:async()=>({message:result.saveError||'Saved locally.'})};}
+    if(route==='save'){result.saves.push(JSON.parse(options.body));return{ok:result.saveError===undefined,json:async()=>({message:result.saveError||'Saved locally.',field:result.errorField})};}
     return{ok:true,json:async()=>route==='state'?state:route==='dependencies'?result.dependencies:result.input};
   };
   vi.spyOn(window,'confirm').mockReturnValue(true);
@@ -110,6 +110,92 @@ it('reports an unavailable server without starting a poller',async()=>{
   document.documentElement.innerHTML=readFileSync('app/web/index.html','utf8');
   expect(await start(document,window,async()=>{throw Error('offline');})).toBeNull();
   expect(document.getElementById('load-error').textContent).toContain('Reopen configure.cmd');
+});
+
+it('reviews assignments and updates the overview while keeping calibration optional',async()=>{
+  const t=await mount('xbox');
+  expect(t.$('calibration').open).toBe(false);
+  const row=document.querySelector('[data-mapping="buttons:s11"]');
+  expect(row.textContent).toContain('UP');
+  expect(row.querySelector('button').textContent).toBe('Edit Sidestick 11');
+  row.querySelector('button').click();
+  expect(t.$('control').value).toBe('buttons:s11');
+  expect(document.activeElement).toBe(t.$('binding'));
+  t.$('binding').value='RB';t.$('binding').oninput();
+  expect(row.textContent).toContain('RB');
+  expect(t.$('message').textContent).toContain('Unsaved');
+  t.$('revert').click();
+  expect(t.$('binding').value).toBe('A');
+  expect(document.querySelector('[data-mapping="buttons:s11"]').textContent).toContain('UP');
+  expect(t.$('revert').disabled).toBe(true);
+  t.$('control').value='buttons:s5';t.$('control').onchange();
+  expect(t.$('special-binding').textContent).toContain('High-G override');
+  t.$('binding').value='B';t.$('binding').oninput();
+  expect(document.querySelector('[data-mapping="buttons:s5"] .mapping-output').textContent).toBe('B + High-G override');
+  expect(t.$('special-binding').textContent).toContain('binding also remains active');
+  t.$('binding').value='';t.$('binding').oninput();
+  t.$('high_g_button').value='0';t.$('high_g_button').oninput();
+  expect(t.$('special-binding').textContent).toBe('');
+  expect(document.querySelector('[data-mapping="buttons:s5"]').textContent).toContain('Unassigned');
+});
+
+it('rejects an invalid binding beside the editor before sending a save',async()=>{
+  const t=await mount('xbox');
+  t.$('binding').value='NOT_A_BUTTON';t.$('binding').oninput();
+  await t.$('save').onclick();
+  expect(t.saves).toHaveLength(0);
+  expect(t.$('binding').getAttribute('aria-invalid')).toBe('true');
+  expect(t.$('binding-error').textContent).toContain('Xbox');
+  expect(document.activeElement).toBe(t.$('binding'));
+  t.$('binding').value='A';t.$('binding').oninput();
+  expect(t.$('binding').hasAttribute('aria-invalid')).toBe(false);
+  expect(t.$('binding-error').textContent).toBe('');
+});
+
+it('reveals and focuses the exact field reported by save validation',async()=>{
+  const t=await mount('keyboard');t.$('use-layout').click();
+  t.saveError='Choose a supported key.';t.errorField='keys:roll_left';
+  await t.$('save').onclick();
+  expect(t.$('control').value).toBe('keys:roll_left');
+  expect(t.$('binding').getAttribute('aria-invalid')).toBe('true');
+  expect(t.$('binding-error').textContent).toContain('supported key');
+  expect(document.activeElement).toBe(t.$('binding'));
+  t.errorField='poll_hz';t.saveError='Input frequency must be between 10 and 500 Hz.';
+  await t.$('save').onclick();
+  expect(t.$('calibration').open).toBe(true);
+  expect(t.$('poll_hz-error').textContent).toContain('10 and 500');
+  expect(document.activeElement).toBe(t.$('poll_hz'));
+});
+
+it('keeps device selection and handedness usable when a private photo is unavailable',async()=>{
+  const t=await mount('xbox');
+  t.$('show-quadrant').click();expect(t.$('control').value).toBe('buttons:q1');
+  expect(t.$('stick-photo').hidden).toBe(true);
+  t.$('show-stick').click();expect(t.$('control').value).toBe('buttons:s1');
+  t.$('handedness').value='left';t.$('handedness').onchange();
+  expect(document.querySelector('.sidestick-photo').dataset.hand).toBe('left');
+  for(const image of document.querySelectorAll('.photo-frame img')) {
+    image.onerror();expect(image.parentElement.hidden).toBe(true);
+    expect(image.parentElement.nextElementSibling.hidden).toBe(false);
+    image.onload();expect(image.parentElement.hidden).toBe(false);
+    expect(image.parentElement.nextElementSibling.hidden).toBe(true);
+  }
+  t.$('binding').value='RB';t.$('binding').oninput();
+  window.confirm.mockReturnValue(false);t.$('revert').click();expect(t.$('binding').value).toBe('RB');
+});
+
+it('opens calibration for invalid numeric input without sending or discarding edits',async()=>{
+  const t=await mount('xbox');
+  t.$('poll_hz').value='501';t.$('poll_hz').oninput();
+  await t.$('save').onclick();expect(t.saves).toHaveLength(0);
+  expect(t.$('calibration').open).toBe(true);
+  expect(document.activeElement).toBe(t.$('poll_hz'));
+  expect(t.$('poll_hz-error').textContent).toContain('10 to 500');
+  expect(t.$('poll_hz').value).toBe('501');
+  t.$('poll_hz').value='125';t.$('poll_hz').oninput();
+  t.errorField='axes:roll';t.saveError='Choose an input axis.';
+  await t.$('save').onclick();expect(document.activeElement).toBe(t.$('axes-roll'));
+  t.errorField='unknown';await t.$('save').onclick();expect(t.$('message').textContent).toContain('input axis');
 });
 
 it('executes the browser boot module',async()=>{

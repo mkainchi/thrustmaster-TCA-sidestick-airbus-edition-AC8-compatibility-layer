@@ -16,6 +16,12 @@ describe('keyboard and mode semantics', () => {
     const fake = async()=>({ok:false,json:async()=>({message:'Choose a layout.'})});
     await expect(request(fake,'/session/','save',{})).rejects.toThrow('Choose a layout.');
   });
+  it('preserves the field location supplied by server validation',async()=>{
+    const fake=async()=>({ok:false,json:async()=>({message:'Choose a supported key.',field:'keys:roll_left'})});
+    try { await request(fake,'/session/','save',{}); }
+    catch(error) { expect(error.field).toBe('keys:roll_left');expect(error.message).toContain('supported key');return; }
+    throw Error('Expected save validation to reject.');
+  });
   it('uses GET for state and supports all standard modifier combinations', async()=>{
     const fake=async(url,options)=>({ok:true,json:async()=>({url,options})});
     expect(await request(fake,'/session/','state')).toEqual({url:'/session/state',options:{}});

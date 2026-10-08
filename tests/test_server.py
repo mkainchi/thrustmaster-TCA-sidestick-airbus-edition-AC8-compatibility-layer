@@ -40,7 +40,7 @@ def test_loopback_token_origin_and_confirmed_layout_save(tmp_path):
         assert e.value.code == 403
         payload['profile']['layout'] = '00000409'
         req = urllib.request.Request(base+'save', json.dumps(payload).encode(), {'Content-Type': 'application/json', 'Origin': base.split('/'+server.token)[0]})
-        assert json.load(urllib.request.urlopen(req))['message'] == 'Saved. Run emulate.cmd to start keyboard mode.'
+        assert json.load(urllib.request.urlopen(req))['message'] == 'Saved. Run emulate.cmd to start Keyboard · TARGET.'
         assert (tmp_path/'.local'/'config.json').exists()
     finally:
         server.shutdown(); server.server_close(); thread.join()
@@ -107,3 +107,57 @@ def test_real_adapter_paths_use_layout_and_input_interfaces(tmp_path,monkeypatch
         assert http(server,conn,'GET','input')[0]==200 and modes[-1]=='xbox'
         input.snapshot=lambda mode:(_ for _ in ()).throw(RuntimeError('unavailable'))
         assert http(server,conn,'GET','input')[0]==503
+
+
+def test_save_error_preserves_message_and_identifies_invalid_field(tmp_path):
+    fixture={'layouts':[{'id':'00000409','label':'QWERTY'}],'suggested':None,'ready':True}
+    with live(tmp_path,fixture) as (server,conn):
+        cfg=s.defaults('xbox');cfg['buttons']['s3']='A+BAD'
+        code,body,_=http(server,conn,'POST','save',json.dumps({'mode':'xbox','profile':cfg,'target_path':''}))
+        error=json.loads(body)
+        assert code==400 and error['field']=='buttons:s3'
+        assert 'Xbox button names' in error['message']
+        assert not (tmp_path/'.local'/'config.json').exists()
+        cfg=s.defaults('keyboard');cfg['layout']='0000040c'
+        code,body,_=http(server,conn,'POST','save',json.dumps({'mode':'keyboard','profile':cfg,'target_path':''}))
+        assert code==400 and json.loads(body)['field']=='layout'
+
+
+@pytest.mark.parametrize('section,key',[('keys','roll_left'),('buttons','s3')])
+def test_keyboard_translation_error_identifies_binding_without_saving(tmp_path,monkeypatch,section,key):
+    def resolve(binding,layout):
+        if binding=='☃':
+            raise ValueError('A character is unavailable in the selected layout. Capture its physical key instead.')
+        return 1004,[]
+    monkeypatch.setattr(s,'WindowsLayouts',lambda:SimpleNamespace(items=[{'id':'00000409','label':'QWERTY'}],suggested=None,resolve=resolve))
+    monkeypatch.setattr(s,'Joysticks',lambda:SimpleNamespace())
+    cfg=s.defaults('keyboard');cfg['layout']='00000409';cfg[section][key]='☃'
+    with live(tmp_path,None) as (server,conn):
+        code,body,_=http(server,conn,'POST','save',json.dumps({'mode':'keyboard','profile':cfg,'target_path':''}))
+        error=json.loads(body)
+        assert code==400 and error['field']==f'{section}:{key}'
+        assert 'Capture its physical key' in error['message']
+        assert not (tmp_path/'.local'/'config.json').exists()
+
+
+@pytest.mark.parametrize('mode,label',[('xbox','Xbox · direct input'),('target-xbox','TARGET → Xbox')])
+def test_save_success_names_the_visible_mode(tmp_path,mode,label):
+    with live(tmp_path,{'layouts':[],'suggested':None,'ready':True}) as (server,conn):
+        code,body,_=http(server,conn,'POST','save',json.dumps({'mode':mode,'profile':s.defaults(mode),'target_path':''}))
+        assert code==200 and json.loads(body)['message']==f'Saved. Run emulate.cmd to start {label}.'
+
+
+@pytest.mark.parametrize('name',['sidestick.png','quadrant.png','sidestick-grip.png','quadrant-grip.png'])
+def test_device_photos_only_serve_allowlisted_private_images(tmp_path,name):
+    images=tmp_path/'.local'/'device-images';images.mkdir(parents=True)
+    (images/'private.png').write_bytes(b'private')
+    with live(tmp_path,{'layouts':[],'suggested':None,'ready':True}) as (server,conn):
+        code,body,_=http(server,conn,'GET','device/'+name)
+        assert code==404 and json.loads(body)=={'message':'Not found.'}
+        (images/name).write_bytes(b'fixture image')
+        code,body,headers=http(server,conn,'GET','device/'+name)
+        assert code==200 and body==b'fixture image'
+        assert headers['Content-Type']=='image/png'
+        for route in ('device/private.png','device/../config.json','device/%2e%2e/config.json','device/sidestick.webp'):
+            code,body,_=http(server,conn,'GET',route)
+            assert code==404 and json.loads(body)=={'message':'Not found.'}

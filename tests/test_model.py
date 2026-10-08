@@ -88,3 +88,32 @@ def test_store_rejects_malformed_state_and_captured_key(tmp_path):
     with pytest.raises(ValueError):validate('keyboard',cfg)
     cfg['buttons']['s1']={'code':'KeyA','modifiers':['shift']}
     assert validate('keyboard',cfg)==cfg
+
+
+@pytest.mark.parametrize('section,key,value,field,message', [
+    (None,'layout','00000409','layout','Xbox profiles'),
+    ('axes','pitch',6,'axes:pitch','between 0 and 5'),
+    ('invert','pitch',1,'invert:pitch','true or false'),
+    (None,'deadzone',1,'deadzone','Stick deadzone must be between 0 and 0.99'),
+    (None,'throttle_deadzone',1,'throttle_deadzone','Throttle deadzone must be between 0 and 0.99'),
+    (None,'yaw_threshold',0,'yaw_threshold','Yaw threshold must be between 0.01 and 1'),
+    (None,'camera_strength',2,'camera_strength','Camera strength must be between 0 and 1'),
+    (None,'poll_hz',501,'poll_hz','Polling rate must be between 10 and 500 Hz'),
+    (None,'high_g_button',17,'high_g_button','0 (disabled) or 1–16'),
+    ('buttons','s3','A+BAD','buttons:s3','Xbox button names'),
+    ('buttons','s4',123,'buttons:s4','Invalid binding'),
+    ('keys','roll_left',{},'keys:roll_left','Unsupported physical key'),
+])
+def test_validation_identifies_the_field_to_correct(section,key,value,field,message):
+    cfg=defaults('xbox')
+    (cfg[section] if section else cfg)[key]=value
+    with pytest.raises(ValueError) as error:
+        validate('xbox',cfg)
+    assert getattr(error.value,'field',None)==field
+    assert message in str(error.value)
+
+
+def test_keyboard_layout_validation_identifies_layout_field():
+    with pytest.raises(ValueError) as error:
+        validate('keyboard',defaults('keyboard'))
+    assert getattr(error.value,'field',None)=='layout'

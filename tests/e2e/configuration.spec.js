@@ -1,5 +1,5 @@
 import {test as base, expect} from '@playwright/test';
-import {mkdtemp, writeFile, readFile, rm} from 'node:fs/promises';
+import {mkdtemp, writeFile, readFile, rm, mkdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawn} from 'node:child_process';
@@ -9,6 +9,9 @@ const test = base.extend({editor: async({page}, use) => {
   const fixture = join(root, 'fixture.json');
   const data = {layouts: [{id:'00000409',label:'QWERTY · English'}, {id:'0000040c',label:'AZERTY · French'}, {id:'00000407',label:'QWERTZ · German'}], suggested:'0000040c', ready:false};
   await writeFile(fixture, JSON.stringify(data));
+  await mkdir(join(root,'.local','device-images'),{recursive:true});
+  const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jvz0AAAAASUVORK5CYII=','base64');
+  for(const image of ['sidestick','quadrant','sidestick-grip','quadrant-grip']) await writeFile(join(root,'.local','device-images',image+'.png'),pixel);
   const python = process.env.TCA_TEST_PYTHON || '.local/dev-venv/Scripts/python.exe';
   const child = spawn(python, ['-B', '-m', 'app', 'configure', '--root', root, '--test-fixture', fixture, '--no-browser'], {cwd:process.cwd(), windowsHide:true});
   let output='', errors='';
@@ -57,7 +60,7 @@ for (const mode of ['keyboard','xbox','target-xbox']) {
     await page.getByRole('button',{name:'Recheck dependencies'}).click();
     await expect(page.locator('#dependency-message')).toContainText('Ready for emulation');
     await page.getByRole('button',{name:'Save configuration'}).click();
-    await expect(page.locator('#message')).toContainText(`start ${mode} mode`);
+    await expect(page.locator('#message')).toContainText('Saved. Run emulate.cmd to start');
     const saved=JSON.parse(await readFile(join(editor.root,'.local','config.json'),'utf8'));
     expect(saved.preferred_mode).toBe(mode);
     expect(saved.profiles[mode].layout).toBe(mode==='keyboard'?'00000409':null);
@@ -71,7 +74,9 @@ test('invalid mapping and active session preserve edits and return actionable er
   await page.getByLabel('Preferred mode').selectOption('xbox');
   await page.getByLabel('Xbox button or combination').fill('NOT_A_BUTTON');
   await page.getByRole('button',{name:'Save configuration'}).click();
-  await expect(page.locator('#message')).toContainText('Use Xbox button names');
+  await expect(page.locator('#binding-error')).toContainText('Xbox button names');
+  await expect(page.locator('#binding')).toBeFocused();
+  await expect(page.locator('#binding')).toHaveAttribute('aria-invalid','true');
   await expect(page.getByLabel('Xbox button or combination')).toHaveValue('NOT_A_BUTTON');
   await page.getByLabel('Xbox button or combination').fill('A');
   await page.getByRole('button',{name:'Save configuration'}).click();
@@ -112,6 +117,7 @@ test('live controls clear on disconnect and calibration persists independently',
   await writeFile(editor.fixture,JSON.stringify(editor.data));
   await expect(page.locator('[data-control="s11"]')).toHaveClass(/live/);
   await expect(page.locator('#axis-preview')).toContainText('0.50');
+  await page.locator('#calibration > summary').click();
   await page.getByLabel('roll input axis').selectOption('1');
   await page.getByLabel('Invert roll',{exact:true}).check();
   await page.getByLabel('Flight deadzone',{exact:true}).fill('.12');
@@ -169,6 +175,7 @@ test('failed save, dependency checks and initial loading all offer recovery',asy
 
 test('keyboard focus, text contrast and 320px layout remain usable',async({page,editor})=>{
   await page.getByLabel('Preferred mode').selectOption('xbox');
+  await page.getByRole('button',{name:'Quadrant',exact:true}).click();
   const marker=page.getByRole('button',{name:'Quadrant button 2',exact:true});
   await marker.focus();await marker.press('Space');
   await expect(page.getByLabel('Physical control or action')).toHaveValue('buttons:q2');
@@ -186,4 +193,37 @@ test('keyboard focus, text contrast and 320px layout remain usable',async({page,
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
   await expect(page.getByRole('button',{name:'Save configuration'})).toBeVisible();
   expect(editor.external).toEqual([]);
+});
+
+test('a narrow binding edit can be saved without opening photos or calibration',async({page,editor})=>{
+  await page.setViewportSize({width:390,height:844});await page.reload();
+  await page.getByLabel('Preferred mode').selectOption('xbox');
+  await expect(page.locator('#photo-panel')).not.toHaveAttribute('open','');
+  await expect(page.locator('#calibration')).not.toHaveAttribute('open','');
+  const binding=await page.locator('#binding').boundingBox();
+  const save=await page.locator('#save').boundingBox();
+  expect(save.y-binding.y).toBeLessThan(400);
+  await page.locator('#binding').fill('RB');await page.getByRole('button',{name:'Save configuration'}).click();
+  await expect(page.locator('#message')).toContainText('Saved.');
+  await page.locator('#overview > summary').click();
+  await expect(page.locator('[data-mapping="buttons:s1"]')).toContainText('RB');
+  await page.getByRole('button',{name:'Edit Quadrant 2',exact:true}).click();
+  await expect(page.locator('#control')).toHaveValue('buttons:q2');
+  await expect(page.locator('#binding')).toBeFocused();
+  expect(editor.external).toEqual([]);
+});
+
+test('numeric errors reveal calibration and associate the remedy with its field',async({page,editor})=>{
+  await page.getByLabel('Preferred mode').selectOption('xbox');
+  await page.locator('#calibration > summary').click();
+  await page.getByLabel('Input frequency · Hz',{exact:true}).fill('501');
+  await page.locator('#calibration > summary').click();
+  await page.getByRole('button',{name:'Save configuration'}).click();
+  await expect(page.locator('#poll_hz')).toBeFocused();
+  await expect(page.locator('#poll_hz-error')).toContainText('10 to 500');
+  await expect(page.locator('#poll_hz')).toHaveAttribute('aria-invalid','true');
+  await page.getByLabel('Input frequency · Hz',{exact:true}).fill('125');
+  await expect(page.locator('#poll_hz-error')).toBeEmpty();
+  await page.getByRole('button',{name:'Save configuration'}).click();
+  await expect(page.locator('#message')).toContainText('Saved.');
 });
