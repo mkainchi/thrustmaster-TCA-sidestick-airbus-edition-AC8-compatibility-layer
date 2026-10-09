@@ -18,7 +18,7 @@ SPECIAL = {
     'Equal':(46,0x0d), 'BracketLeft':(47,0x1a), 'BracketRight':(48,0x1b),
     'Backslash':(49,0x2b), 'Semicolon':(51,0x27), 'Quote':(52,0x28),
     'Backquote':(53,0x29), 'Comma':(54,0x33), 'Period':(55,0x34),
-    'Slash':(56,0x35), 'CapsLock':(57,0x3a), 'ScrollLock':(71,0x46),
+    'Slash':(56,0x35), 'CapsLock':(57,0x3a), 'PrintScreen':(70,0xe037), 'ScrollLock':(71,0x46),
     'Pause':(72,0xe145), 'Insert':(73,0xe052), 'Home':(74,0xe047),
     'PageUp':(75,0xe049), 'Delete':(76,0xe053), 'End':(77,0xe04f),
     'PageDown':(78,0xe051), 'ArrowRight':(79,0xe04d), 'ArrowLeft':(80,0xe04b),
@@ -40,6 +40,9 @@ for i in range(12):
     CODE_HID[f'F{i+1}'] = 58+i
     SCAN_HID[(0x3b+i if i < 10 else 0x57+i-10)] = 58+i
 MOD_FLAGS = {'shift':0x10000, 'ctrl':0x100000, 'alt':0x40000, 'altgr':0x80000}
+for i in range(12):
+    CODE_HID[f'F{i+13}'] = 104+i
+    SCAN_HID[0x64+i if i < 11 else 0x76] = 104+i
 
 
 def physical_binding(binding):
@@ -89,7 +92,7 @@ class WindowsLayouts:
         kernel.GetLocaleInfoW.argtypes = [ctypes.c_uint32, ctypes.c_uint32, ctypes.c_wchar_p, ctypes.c_int]
         buf = ctypes.create_unicode_buffer(128)
         kernel.GetLocaleInfoW(handle & 0xffff, 0x72, buf, len(buf))
-        return f'{buf.value or "Installed keyboard"} â€” Windows layout {handle & 0xffffffff:08x}'
+        return f'{buf.value or "Installed keyboard"} — Windows layout {handle & 0xffffffff:08x}'
 
     def resolve(self, binding, layout_id):
         if layout_id not in self.handles:

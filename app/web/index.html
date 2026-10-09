@@ -21,7 +21,10 @@
 <details id="overview"><summary>Mapping overview · all controls</summary><p class="help">Review each output, or select a control to edit it. High-G overrides throttle input while held; an assigned button binding also remains active.</p><div class="overview-groups" id="mapping-overview"></div></details>
 <div class="mapping-workspace"><div class="mapping-editor">
 <label for="control">Physical control or action</label><select id="control" aria-describedby="control-status"></select><p id="control-status" class="help" role="status" aria-live="polite"></p>
-<label id="binding-label" for="binding">Output binding</label><input id="binding" type="text" maxlength="128" aria-describedby="binding-help binding-error special-binding"><p id="binding-help"></p><p id="binding-error" class="field-error"></p><p id="special-binding" class="help"></p><button id="capture" type="button">Capture key</button>
+<div id="keyboard-binding"><label id="binding-label" for="binding">Key or named key</label><input id="binding" type="text" maxlength="128" aria-describedby="binding-help binding-error special-binding"><button id="capture" type="button">Capture key</button>
+<label for="key-action">Default AC8 PC action</label><textarea id="key-action" rows="2" readonly></textarea><p id="key-action-help" class="visually-hidden" role="status" aria-live="polite"></p></div>
+<fieldset id="xbox-binding" aria-describedby="binding-help binding-error special-binding"><legend>Xbox button outputs</legend><div id="xbox-rows"></div><button id="add-output" type="button">Add button</button></fieldset>
+<p id="binding-help"></p><p id="binding-error" class="field-error"></p><p id="special-binding" class="help"></p>
 <div class="save-area"><button id="save" type="button" disabled>Save configuration</button><p id="message" role="status" aria-live="polite">Choose your mode to begin.</p>
 <div class="secondary-actions"><button id="revert" type="button" disabled>Revert to saved</button><button id="reset" type="button">Reset this mode</button></div></div></div>
 <details id="photo-panel" class="hardware"><summary>Device diagrams and numbered controls</summary>

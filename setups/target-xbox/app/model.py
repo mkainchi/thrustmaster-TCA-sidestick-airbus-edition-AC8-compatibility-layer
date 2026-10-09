@@ -8,6 +8,7 @@ from .keyboard import physical_binding
 MODES = ('keyboard', 'xbox', 'target-xbox')
 BITS = dict(zip(('UP', 'DOWN', 'LEFT', 'RIGHT', 'START', 'BACK', 'L3', 'R3', 'LB', 'RB', 'A', 'B', 'X', 'Y'),
                 (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 4096, 8192, 16384, 32768)))
+XBOX_OUTPUTS = ('A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'L3', 'R3', 'START', 'BACK', 'UP', 'DOWN', 'LEFT', 'RIGHT')
 CONTROLS = [f's{i}' for i in range(1, 17)] + [f'q{i}' for i in range(1, 17)]
 KEYS = ('roll_left', 'roll_right', 'pitch_down', 'pitch_up', 'yaw_left', 'yaw_right',
         'camera_up', 'camera_down', 'camera_left', 'camera_right', 'accelerate', 'brake')
@@ -74,7 +75,7 @@ def validate(mode, cfg):
                     physical_binding(value)
                 except ValueError as error:
                     raise ConfigurationError(str(error), field) from error
-            if section == 'buttons' and mode != 'keyboard' and value != '' and (not isinstance(value, str) or any(n not in BITS for n in value.split('+'))):
+            if section == 'buttons' and mode != 'keyboard' and value != '' and (not isinstance(value, str) or any(n not in XBOX_OUTPUTS for n in value.split('+'))):
                 raise ConfigurationError('Use Xbox button names separated by +, or leave unassigned.', field)
     return cfg
 
@@ -163,7 +164,10 @@ def report(state, cfg, *, throttle=None):
         for button in source['buttons']:
             binding = cfg['buttons'].get(f'{prefix}{button}', '')
             for name in filter(None, binding.split('+')):
-                mask |= BITS[name]
+                if name in ('LT', 'RT'):
+                    result[name.lower()] = 1
+                else:
+                    mask |= BITS[name]
     yaw = stick['axes'][cfg['axes']['yaw']] * (-1 if cfg['invert']['yaw'] else 1)
     if yaw < -cfg['yaw_threshold']:
         mask |= BITS['LB']

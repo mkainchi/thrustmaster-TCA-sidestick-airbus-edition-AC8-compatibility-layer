@@ -18,6 +18,8 @@ Users must be able to identify controls, save independent mode profiles, resolve
 
 Physical button presses select the matching device and binding while the editor is idle. The sidestick slider and quadrant's left lever share acceleration/braking; the last throttle moved beyond a small noise threshold takes control.
 
+Xbox mappings use addable native button dropdowns, including full-pressure LT/RT. Keyboard mappings accept characters, named standard keys and physical capture. Default-action hints reference verified AC8 PC bindings; unverified entries explicitly require configuration in game. Example profiles are not evidence of game defaults.
+
 ## Operating Context
 
 Configuration runs on loopback; TARGET and system drivers are installed separately. Stick motion controls flight; the POV controls the camera. Editable ACE COMBAT examples must match the game's bindings.

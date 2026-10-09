@@ -70,3 +70,7 @@ def test_invalid_layout_untranslatable_character_and_scan():
         assert obj.resolve('a','00000409')==(1004,expected)
     obj.api.VkKeyScanExW=Fn(lambda *a:ord('A')|(8<<8))
     with pytest.raises(ValueError,match='IME'):obj.resolve('a','00000409')
+@pytest.mark.parametrize('code,hid', [('PrintScreen', 70), ('F13', 104), ('F24', 115), ('ControlLeft', 224), ('AltRight', 230)])
+def test_extended_standard_physical_keys(code, hid):
+    from app.keyboard import physical_binding
+    assert physical_binding({'code': code, 'modifiers': []}) == (1000+hid, [])

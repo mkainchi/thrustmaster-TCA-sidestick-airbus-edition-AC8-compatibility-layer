@@ -9,6 +9,7 @@ from .keyboard import WindowsLayouts
 from .model import ConfigurationError, Store, MODES, defaults, validate
 from .target import generate
 from .windows import Joysticks
+from .game_controls import key_action, xbox_choices
 
 WEB = Path(__file__).parent / 'web'
 
@@ -29,7 +30,7 @@ def create_server(root, fixture=None, initial_mode=None):
         inputs = None
 
     def fixture_data():
-        return json.loads(Path(fixture).read_text()) if isinstance(fixture, (str, Path)) else fixture
+        return json.loads(Path(fixture).read_text(encoding='utf-8')) if isinstance(fixture, (str, Path)) else fixture
 
     def dependencies(mode, path):
         if fixture is None:
@@ -78,7 +79,8 @@ def create_server(root, fixture=None, initial_mode=None):
                     data = fixture_data() if fixture is not None else {'layouts': layouts.items, 'suggested': layouts.suggested}
                     self.json(200, {'saved': saved, 'defaults': {m: defaults(m) for m in MODES},
                                     'layouts': data['layouts'], 'suggested': data['suggested'],
-                                    'active': (store.local / 'session.json').exists()})
+                                    'active': (store.local / 'session.json').exists(),
+                                    'game_controls': {'xbox': xbox_choices()}})
                 elif route == 'input':
                     if fixture is not None:
                         self.json(200, fixture_data().get('input', {'available': False, 'message': 'Connect both TCA devices to preview input.'}))
@@ -102,7 +104,7 @@ def create_server(root, fixture=None, initial_mode=None):
             except ValueError:
                 size = 0
             raw = self.rfile.read(min(max(size, 0), 32001))
-            if route not in ('save', 'dependencies') or self.headers.get('Origin') != 'http://' + host:
+            if route not in ('save', 'dependencies', 'key-action') or self.headers.get('Origin') != 'http://' + host:
                 self.json(403, {'message': 'Request rejected.'})
                 return
             if self.headers.get('Content-Type') != 'application/json':
@@ -112,6 +114,12 @@ def create_server(root, fixture=None, initial_mode=None):
                 if not 0 < size <= 32000:
                     raise ValueError('Invalid request size.')
                 data = json.loads(raw)
+                if route == 'key-action':
+                    if not isinstance(data, dict) or set(data) != {'layout', 'binding'}:
+                        raise ValueError('Invalid key-action request.')
+                    resolver = (lambda binding, layout: (1004, [])) if fixture is not None else layouts.resolve
+                    self.json(200, key_action(data['binding'], data['layout'], resolver))
+                    return
                 fields = {'mode', 'target_path'} | ({'profile'} if route == 'save' else set())
                 if not isinstance(data, dict) or set(data) != fields or data['mode'] not in MODES or not isinstance(data['target_path'], str):
                     raise ValueError('Invalid configuration request.')

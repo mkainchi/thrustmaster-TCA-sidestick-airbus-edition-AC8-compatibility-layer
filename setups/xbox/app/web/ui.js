@@ -6,6 +6,7 @@ export async function start(doc, win, fetcher) {
   const api = (route, data) => request(fetcher, base, route, data);
   let state, mode, profile, dirty = false, busy = false, armed = false;
   let pressed = null, polling = false, inputGeneration = 0, closed = false;
+  let pendingModifier = null, hintGeneration = 0, hintTimer;
   const numeric = ['deadzone', 'throttle_deadzone', 'yaw_threshold', 'camera_strength', 'high_g_button', 'poll_hz'];
   const keyboard = () => mode === 'keyboard';
   const descriptions = {
@@ -13,7 +14,63 @@ export async function start(doc, win, fetcher) {
     xbox: 'Xbox controller output directly from both devices. TARGET is not required.',
     'target-xbox': 'Xbox output through TARGET Combined. Use direct input for ordinary Xbox-controller play; use this route when your setup needs TARGET to combine the devices. Requires TARGET and ViGEmBus.'
   };
-  const xboxButtons = ['A','B','X','Y','LB','RB','L3','R3','START','BACK','UP','DOWN','LEFT','RIGHT'];
+  const bindingInput = () => keyboard() ? $('binding') : $('xbox-rows').querySelector('select');
+  const focusBinding = () => bindingInput().focus();
+  function disarm() { armed = false; pendingModifier = null; $('capture').textContent = 'Capture key'; }
+  function keyHint(delayed = false) {
+    const generation = ++hintGeneration;
+    win.clearTimeout(hintTimer);
+    if (!keyboard() || closed) return;
+    const [group, key] = $('control').value.split(':');
+    const binding = profile[group][key], layout = profile.layout || null;
+    $('key-action').value = 'Checking default action…';
+    $('key-action-help').textContent = '';
+    const lookup = async () => {
+      let text;
+      try { text = (await api('key-action', {layout, binding})).text; }
+      catch { text = 'Default not verified; set this action manually in game.'; }
+      if (closed || generation !== hintGeneration) return;
+      $('key-action').value = text;
+      $('key-action-help').textContent = text;
+    };
+    if (delayed) hintTimer = win.setTimeout(lookup, 150);
+    else return lookup();
+  }
+  function xboxRows(values) {
+    if (!values) {
+      const [group, key] = $('control').value.split(':');
+      values = profile[group][key].split('+');
+    }
+    $('xbox-rows').replaceChildren();
+    const choices = state.game_controls.xbox;
+    const update = () => {
+      const [group, key] = $('control').value.split(':');
+      profile[group][key] = values.filter(Boolean).join('+');
+      changed('binding');
+    };
+    values.forEach((value, index) => {
+      const row = doc.createElement('div'), select = doc.createElement('select'), remove = doc.createElement('button');
+      row.className = 'xbox-output-row'; select.id = 'xbox-output-' + index;
+      select.setAttribute('aria-label', 'Xbox button ' + (index + 1));
+      select.setAttribute('aria-describedby', 'binding-help binding-error special-binding');
+      const empty = doc.createElement('option'); empty.value = ''; empty.textContent = 'Unassigned'; select.append(empty);
+      for (const choice of choices) {
+        const option = doc.createElement('option'); option.value = choice.value; option.textContent = choice.label;
+        option.disabled = values.some((other, position) => position !== index && other === choice.value);
+        select.append(option);
+      }
+      select.value = value;
+      select.onchange = () => {
+        if (select.value && values.some((other, position) => position !== index && other === select.value)) { select.value = values[index]; return; }
+        values[index] = select.value; update(); xboxRows(values); $('xbox-output-' + index).focus();
+      };
+      remove.type = 'button'; remove.textContent = 'Remove'; remove.setAttribute('aria-label', 'Remove Xbox button ' + (index + 1));
+      remove.onclick = () => { values.splice(index, 1); update(); xboxRows(values.length ? values : ['']); focusBinding(); };
+      row.append(select, remove); $('xbox-rows').append(row);
+    });
+    $('add-output').disabled = values.length >= choices.length || values.includes('');
+    $('add-output').onclick = () => { xboxRows([...values, '']); $('xbox-output-' + values.length).focus(); };
+  }
   const controlName = (group, key) => group === 'keys' ? key.replaceAll('_', ' ') : (key.startsWith('s') ? 'Sidestick ' : 'Quadrant ') + key.slice(1);
   function message(text, error = false) {
     $('message').textContent = text;
@@ -25,16 +82,17 @@ export async function start(doc, win, fetcher) {
   }
   function clearError(id) {
     $(id).removeAttribute('aria-invalid');
+    if (id === 'binding') for (const input of $('xbox-rows').querySelectorAll('select')) input.removeAttribute('aria-invalid');
     $(id + '-error').textContent = '';
   }
   function clearErrors() {
-    for (const field of doc.querySelectorAll('[aria-invalid]')) clearError(field.id);
+    for (const field of doc.querySelectorAll('[aria-invalid]')) clearError(field.closest('#xbox-rows') ? 'binding' : field.id);
   }
   function fieldError(field, text) {
     let id = field;
     if (/^(buttons|keys):/.test(field)) { $('control').value = field; selection(); id = 'binding'; }
     else id = field.replace(':', '-');
-    const input = $(id);
+    const input = id === 'binding' ? bindingInput() : $(id);
     if (!input) return;
     input.setAttribute('aria-invalid', 'true');
     $(id + '-error').textContent = text;
@@ -66,7 +124,7 @@ export async function start(doc, win, fetcher) {
         const row = doc.createElement('tr'), label = doc.createElement('th'), output = doc.createElement('td'), button = doc.createElement('button');
         row.dataset.mapping = group + ':' + key; label.scope = 'row';
         button.type = 'button'; button.textContent = 'Edit ' + controlName(group, key);
-        button.onclick = () => { $('control').value = group + ':' + key; selection(); $('binding').focus(); };
+        button.onclick = () => { $('control').value = group + ':' + key; selection(); focusBinding(); };
         label.append(button); output.className = 'mapping-output'; row.append(label, output); body.append(row);
       }
       $('mapping-overview').append(table);
@@ -79,13 +137,14 @@ export async function start(doc, win, fetcher) {
     const [group, key] = selected.split(':');
     clearError('binding');
     $('binding').value = bindingLabel(profile[group][key]);
-    $('binding-label').textContent = keyboard() ? 'Key or named key' : 'Xbox button or combination';
-    $('binding-help').textContent = keyboard() ? 'Type a character or named key (Space, Enter, ArrowLeft, F1), or capture a physical key. Leave a button blank to unassign it.' : 'Face: A, B, X, Y. Shoulders: LB, RB. Stick clicks: L3, R3. Menu: START, BACK. D-pad: UP, DOWN, LEFT, RIGHT. Join names with +, or leave blank.';
+    $('keyboard-binding').hidden = !keyboard(); $('xbox-binding').hidden = keyboard();
+    $('binding-help').textContent = keyboard() ? 'Type a character or named key (Space, Enter, ControlLeft, PrintScreen, F1–F24), or capture a physical key. Leave a button blank to unassign it.' : 'Choose an output; add buttons for a combination. LT and RT send full trigger pressure while held. Default AC8 PC actions are shown only when verified; configure unverified actions in game.';
+    if (keyboard()) keyHint(); else { hintGeneration++; win.clearTimeout(hintTimer); xboxRows(); }
     $('special-binding').textContent = group === 'buttons' && key === 's' + profile.high_g_button ? 'This button holds acceleration and braking together. Its High-G override takes priority over throttle input; an assigned button binding also remains active. Change or disable High-G in calibration.' : '';
     const quadrant = group === 'buttons' && key.startsWith('q');
     $('stick-photo').hidden = quadrant; $('quadrant-photo').hidden = !quadrant;
     $('show-stick').setAttribute('aria-pressed', String(!quadrant)); $('show-quadrant').setAttribute('aria-pressed', String(quadrant));
-    armed = false; $('capture').textContent = 'Capture key';
+    disarm();
     for (const element of doc.querySelectorAll('[data-control]')) {
       element.setAttribute('aria-pressed', String(selected === 'buttons:' + element.dataset.control));
     }
@@ -164,7 +223,7 @@ export async function start(doc, win, fetcher) {
   async function chooseMode() {
     const next = $('mode').value;
     if (dirty && !win.confirm('Discard unsaved changes in this mode?')) { $('mode').value = mode; return; }
-    mode = next; dirty = false;
+    mode = next; dirty = false; hintGeneration++; win.clearTimeout(hintTimer); disarm();
     inputGeneration++; clearInput();
     if (mode) profile = structuredClone(state.saved.profiles[mode]);
     render();
@@ -217,31 +276,40 @@ export async function start(doc, win, fetcher) {
     $('recheck').onclick = recheck;
     $('target-path').oninput = () => changed();
     $('control').onchange = selection;
-    $('layout').onchange = () => { profile.layout = $('layout').value; changed('layout'); };
+    $('layout').onchange = () => { profile.layout = $('layout').value; changed('layout'); keyHint(); };
     $('use-layout').onclick = () => {
       if (!suggestion) { const text = 'Windows layout unavailable. Choose a layout from the list.'; message(text, true); fieldError('layout', text); return; }
       $('layout').value = suggestion.id; $('layout').dispatchEvent(new win.Event('change'));
     };
     for (const element of doc.querySelectorAll('[data-control]')) {
-      const select = () => { $('control').value = 'buttons:' + element.dataset.control; selection(); $('binding').focus(); };
+      const select = () => { $('control').value = 'buttons:' + element.dataset.control; selection(); focusBinding(); };
       element.onclick = select;
       element.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); } };
     }
     $('binding').oninput = () => {
       const [group, key] = $('control').value.split(':'); profile[group][key] = $('binding').value;
-      armed = false; $('capture').textContent = 'Capture key'; changed('binding');
+      disarm(); changed('binding'); keyHint(true);
     };
-    $('capture').onclick = () => { armed = true; $('capture').textContent = 'Press key…'; $('binding').focus(); };
-    $('binding').onblur = () => { armed = false; $('capture').textContent = 'Capture key'; };
+    $('capture').onclick = () => { disarm(); armed = true; $('capture').textContent = 'Press key…'; $('binding').focus(); };
+    $('binding').onblur = disarm;
+    const acceptCapture = binding => {
+      const [group, key] = $('control').value.split(':');
+      profile[group][key] = binding; $('binding').value = bindingLabel(binding); disarm(); changed('binding'); keyHint();
+    };
     $('binding').onkeydown = event => {
       if (!armed) return;
       event.preventDefault();
       try {
         const binding = capturedKey(event);
-        if (binding === null) return;
-        const [group, key] = $('control').value.split(':');
-        profile[group][key] = binding; $('binding').value = bindingLabel(binding); armed = false; $('capture').textContent = 'Capture key'; changed('binding');
+        if (binding === null) { pendingModifier = event.code; return; }
+        acceptCapture(binding);
       } catch (error) { fieldError('binding', error.message); message(error.message, true); }
+    };
+    $('binding').onkeyup = event => {
+      if (!armed || event.code !== pendingModifier) return;
+      event.preventDefault();
+      try { acceptCapture(capturedKey(event, true)); }
+      catch (error) { fieldError('binding', error.message); message(error.message, true); }
     };
     for (const name of numeric) $(name).oninput = () => { profile[name] = Number($(name).value); changed(name); selection(); };
     $('revert').onclick = () => {
@@ -252,8 +320,8 @@ export async function start(doc, win, fetcher) {
       clearErrors();
       if (!keyboard()) {
         for (const [key, binding] of Object.entries(profile.buttons)) {
-          if (binding && binding.split('+').some(name => !xboxButtons.includes(name))) {
-            const text = 'Use the Xbox button names shown below the field, joined with +, or leave it blank.';
+          if (binding && binding.split('+').some(name => !state.game_controls.xbox.some(choice => choice.value === name))) {
+            const text = 'Choose Xbox button names from the dropdowns, or leave the control unassigned.';
             fieldError('buttons:' + key, text); message(text, true); return;
           }
         }
@@ -291,5 +359,5 @@ export async function start(doc, win, fetcher) {
   const unload = event => { if (dirty) { event.preventDefault(); event.returnValue = ''; } };
   win.addEventListener('beforeunload', unload);
   const timer = win.setInterval(poll, 50);
-  return {close() { closed = true; win.clearInterval(timer); win.removeEventListener('beforeunload', unload); }, poll};
+  return {close() { closed = true; disarm(); win.clearTimeout(hintTimer); win.clearInterval(timer); win.removeEventListener('beforeunload', unload); }, poll};
 }

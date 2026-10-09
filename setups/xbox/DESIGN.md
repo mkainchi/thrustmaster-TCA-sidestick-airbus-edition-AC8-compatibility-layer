@@ -6,6 +6,8 @@ Use Impeccable's Operate mode: familiar controls and a direct path from mode cho
 
 - Show relevant prerequisites with nearby remedies.
 - Keep control selection, binding, inline error and Save together.
+- Build Xbox combinations with labelled dropdowns and Add/Remove buttons. Keep keyboard typing and capture, followed by a read-only default-action textbox. Announce hint updates politely without repeating them visually or moving focus.
+- Label unverified AC8 PC defaults explicitly; action lookup failures must not block editing or saving.
 - Synchronize live button presses, the native selector and diagram selection without moving focus or losing edits. Pause automatic selection while editing, capturing a key or saving, and resume on the next new press.
 - Offer an editable overview grouped by device and keyboard actions, with explicit High-G behavior.
 - Keep calibration optional.

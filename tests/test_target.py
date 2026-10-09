@@ -66,7 +66,10 @@ def test_installed_target_compiles_and_replays_shared_throttle_without_device_ca
     if mode == 'keyboard':
         cfg['layout'] = '00000409'
         cfg['axes']['throttle'] = 1
-    script = generate(mode, cfg, local, 'validation', lambda b, l: (1004, []), copilot)
+        cfg['buttons'].update({f's{i+1}': {'code': code, 'modifiers': []}
+                               for i, code in enumerate(('PrintScreen', 'F13', 'F24', 'ControlLeft', 'ShiftRight', 'AltLeft'))})
+    from app.keyboard import physical_binding
+    script = generate(mode, cfg, local, 'validation', lambda b, l: physical_binding(b) if isinstance(b, dict) else (1004, []), copilot)
     (local / 'profile.tmc').write_text(script, encoding='utf-8')
     result = subprocess.run([str(folder / 'Interpreter.exe'), 'profile.tmc', 'ValidateProfile'], cwd=local, capture_output=True, timeout=20)
     output = (result.stdout + result.stderr).decode(errors='replace')

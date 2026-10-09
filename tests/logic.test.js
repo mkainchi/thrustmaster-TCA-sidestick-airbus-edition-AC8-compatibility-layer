@@ -33,3 +33,9 @@ describe('keyboard and mode semantics', () => {
     expect(()=>capturedKey({...e,key:'Dead'})).toThrow('standard');
   });
 });
+it('captures a standalone modifier on release and rejects unsupported browser keys',()=>{
+  const event={code:'AltLeft',getModifierState:()=>false};
+  expect(capturedKey(event,true)).toEqual({code:'AltLeft',modifiers:[]});
+  expect(()=>capturedKey({...event,code:'MediaPlayPause'})).toThrow('Unsupported');
+  expect(()=>capturedKey({...event,code:'MetaLeft'})).toThrow('system shortcuts');
+});

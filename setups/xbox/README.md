@@ -46,13 +46,17 @@ Press a hardware button to select its device and binding automatically. Selectio
 
 Switching modes asks before discarding unsaved edits.
 
+In Xbox modes, choose an output from the button dropdown. Select **Add button** to build a combination, or **Remove** to clear an output. Choosing **Unassigned** for the last output clears the mapping. LT/RT output full trigger pressure while held; release restores the active throttle's output. High-G keeps priority.
+
+Dropdowns and the keyboard's read-only **Default AC8 PC action** textbox show only verified game defaults. No complete official PC binding table has been verified yet, so current entries use **Default unverified** or tell you to set the action manually in game. Saved example profiles and your game's customized bindings may differ from its defaults; check the game settings.
+
 ### Controls and calibration
 
 Stick roll/pitch controls flight, twist controls yaw, and the POV controls the camera. The sidestick slider and quadrant's left lever both control acceleration/braking. Moving either beyond 1% of full travel transfers control immediately to it; the idle throttle is ignored. Both share throttle inversion and center deadzone. The quadrant's right lever is ignored. Xbox output uses the left stick for flight, right stick for camera and triggers for acceleration/braking.
 
 Xbox starts with the quadrant's current position; keyboard output stays neutral until a throttle is moved. High-G release restores the active throttle. If both throttles move in one direct-input sample, the current owner stays active; TARGET processes events in arrival order.
 
-High-G overrides throttle while held; an assigned button binding still fires. Set its number to 0 to disable it. Xbox combinations use `+`, such as `LB+RB`.
+High-G overrides throttle while held; an assigned button binding still fires. Set its number to 0 to disable it. Xbox combinations are saved using `+`, such as `LB+RB`; existing profiles remain compatible.
 
 Calibration adjusts axes, inversion, deadzones, yaw threshold, camera strength, throttle neutral band and input frequency. X/Y/Z/R/U/V are Windows axes; defaults use X/Y and R twist, with Z throttle for TARGET Combined. The sidestick slider uses physical Z/THR; the throttle axis selector configures the quadrant in direct/keyboard modes and the Combined throttle output in TARGET → Xbox.
 
@@ -62,7 +66,7 @@ Buttons 11–14 are ACE COMBAT 7/8 wingman examples: Xbox D-pad or keyboard F1�
 
 No QWERTY or AZERTY layout is assumed. Typed characters use the selected layout; **Capture key** stores the physical key and modifier chord instead.
 
-Named keys include `Space`, `Tab`, `Enter`, arrow keys, `F1`–`F12` and `Numpad0`–`Numpad9`. Leave a button blank to unassign it. Unsupported characters, input-method-editor (IME) input and ambiguous capture receive inline errors.
+Named keys include `Space`, `Tab`, `Enter`, arrow keys, `PrintScreen`, `F1`–`F24` and `Numpad0`–`Numpad9`. Capture or type standalone modifiers such as `ControlLeft`, `ShiftRight` and `AltLeft`. Standalone modifiers are captured on release; chords complete when their main key is pressed. System/media keys and keys intercepted by Windows or the browser may be unavailable to capture. Leave a button blank to unassign it. Unsupported characters, input-method-editor (IME) input and ambiguous capture receive inline errors.
 
 ### Device numbering and diagrams
 

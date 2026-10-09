@@ -18,6 +18,8 @@ Unit boundaries exercise Windows APIs, profiles, translation, migration, atomic 
 
 Synthetic input and rendered diagrams do not prove hardware behavior. Development skills, private reports and browser binaries are excluded from releases.
 
+Binding-editor checks cover Xbox dropdown combinations/removal/duplicate prevention and old profile compatibility, LT/RT pressure/release/High-G behavior, standalone modifiers and extended keyboard usages, layout-aware default lookup, stale responses and lookup failure recovery. Verified action lookup uses synthetic catalogue fixtures; those action names are not production game claims. Installed TARGET validation compiles captured PrintScreen, F13/F24 and modifier bindings using private copies of official headers.
+
 ## Runtime checks
 
 - TARGET starts through its GUI's `-r` option. Each session requires fresh readiness; TARGET → Xbox also requires a Combined controller with 4 axes and 32 buttons.
@@ -76,11 +78,15 @@ Check normal button taps select the exact button and device. Keep a switch held 
 
 Use a temporary text/key monitor. Explicitly select each layout used for play and check characters, physical capture and modifiers. Verify held/released flight, POV camera, throttle and High-G keys.
 
+Capture and release left/right Ctrl, Shift and Alt alone, then check Ctrl/Shift/Alt chords do not change after modifier release. Check PrintScreen and F13–F24 with hardware that exposes them, including held/released output. Confirm the default-action textbox follows the selected control/layout and identifies unverified defaults; set those actions manually in game.
+
 After READY, keyboard throttle output must remain neutral until either throttle moves meaningfully. Repeat handoff, neutral, jitter and High-G checks using a key monitor.
 
 ### 5. Check TARGET → Xbox and disconnect recovery
 
 Wait for READY, confirm 4 axes/32 buttons, and repeat motion checks on the new Xbox controller. Unplug a physical device while holding a control: output must become neutral and the virtual controller disappear. Reconnect and restart.
+
+In both Xbox modes, assign LT and RT separately and in a combination with a digital button. Check full pressure while held, then release and confirm the active throttle is restored. Repeat during High-G and verify both triggers remain fully pressed until High-G release. Confirm dropdown editing and pending rows preserve focus and prevent hardware selection while editing.
 
 ### 6. Check both stopping methods
 

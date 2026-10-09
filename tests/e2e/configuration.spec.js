@@ -57,18 +57,18 @@ test('physical presses select the matching device while binding edits and held s
   await expect(page.locator('#mode')).toBeFocused();
   await update();await expect(page.locator('[data-control="q1"]')).not.toHaveClass(/live/);
   await page.getByRole('button',{name:'Sidestick',exact:true}).click();
-  await page.locator('#binding').fill('RB');await page.getByRole('heading',{name:'Hardware mappings'}).click();
+  await setXbox(page,'RB');await page.getByRole('heading',{name:'Hardware mappings'}).click();
   await update([],[2]);await expect(page.locator('#control')).toHaveValue('buttons:q2');
   await expect(page.locator('#show-quadrant')).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('[data-control="q2"]')).toHaveAttribute('aria-pressed','true');
   await expect(page.locator('#control-status')).toContainText('Quadrant 2');
-  await expect(page.locator('#binding')).not.toBeFocused();
+  await expect(page.locator('#xbox-output-0')).not.toBeFocused();
   const images=join(process.cwd(),'.local/button-selection');await mkdir(images,{recursive:true});
   await page.screenshot({path:join(images,'desktop.png'),fullPage:true});
-  await page.locator('#binding').fill('X');await update([11],[2]);
+  await setXbox(page,'X');await update([11],[2]);
   await expect(page.locator('[data-control="s11"]')).toHaveClass(/live/);
   await expect(page.locator('#control')).toHaveValue('buttons:q2');
-  await expect(page.locator('#binding')).toHaveValue('X');await expect(page.locator('#binding')).toBeFocused();
+  await expect(page.locator('#xbox-output-0')).toHaveValue('X');await expect(page.locator('#xbox-output-0')).toBeFocused();
   await page.getByRole('heading',{name:'Hardware mappings'}).click();
   await expect(page.locator('#control')).toHaveValue('buttons:q2');
   await update();await expect(page.locator('[data-control="s11"]')).not.toHaveClass(/live/);
@@ -103,7 +103,7 @@ for (const mode of ['keyboard','xbox','target-xbox']) {
       await expect(page.getByLabel('Key or named key',{exact:true})).toHaveValue('shift+KeyA');
     } else {
       await expect(page.locator('#layout-section')).toBeHidden();
-      await page.getByLabel('Xbox button or combination').fill('A+RB');
+      await setXbox(page,'A+RB');
       editor.data.ready=true; await writeFile(editor.fixture,JSON.stringify(editor.data));
     }
     await page.getByRole('button',{name:'Recheck dependencies'}).click();
@@ -121,17 +121,19 @@ for (const mode of ['keyboard','xbox','target-xbox']) {
 
 test('invalid mapping and active session preserve edits and return actionable errors', async({page,editor})=>{
   await page.getByLabel('Preferred mode').selectOption('xbox');
-  await page.getByLabel('Xbox button or combination').fill('NOT_A_BUTTON');
+  await page.route('**/save',route=>route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:'Choose Xbox button names.',field:'buttons:s1'})}));
+  await setXbox(page,'LT');
   await page.getByRole('button',{name:'Save configuration'}).click();
   await expect(page.locator('#binding-error')).toContainText('Xbox button names');
-  await expect(page.locator('#binding')).toBeFocused();
-  await expect(page.locator('#binding')).toHaveAttribute('aria-invalid','true');
-  await expect(page.getByLabel('Xbox button or combination')).toHaveValue('NOT_A_BUTTON');
-  await page.getByLabel('Xbox button or combination').fill('A');
+  await expect(page.locator('#xbox-output-0')).toBeFocused();
+  await expect(page.locator('#xbox-output-0')).toHaveAttribute('aria-invalid','true');
+  await expect(page.locator('#xbox-output-0')).toHaveValue('LT');
+  await page.unroute('**/save');
+  await setXbox(page,'A');
   await page.getByRole('button',{name:'Save configuration'}).click();
   await expect(page.locator('#message')).toContainText('Saved.');
   await writeFile(join(editor.root,'.local','session.json'),JSON.stringify({nonce:'fixture'}));
-  await page.getByLabel('Xbox button or combination').fill('B');
+  await setXbox(page,'B');
   await page.getByRole('button',{name:'Save configuration'}).click();
   await expect(page.locator('#message')).toContainText('Stop emulation');
   const saved=JSON.parse(await readFile(join(editor.root,'.local','config.json'),'utf8'));
@@ -143,7 +145,7 @@ test('diagram keyboard control, dirty-mode cancellation and responsive layout', 
   const marker=page.getByRole('button',{name:'Sidestick button 11',exact:true});
   await marker.focus(); await marker.press('Enter');
   await expect(page.getByLabel('Physical control or action')).toHaveValue('buttons:s11');
-  await page.getByLabel('Xbox button or combination').fill('UP+Y');
+  await setXbox(page,'UP+Y');
   page.once('dialog',dialog=>dialog.dismiss());
   await page.getByLabel('Preferred mode').selectOption('keyboard');
   await expect(page.getByLabel('Preferred mode')).toHaveValue('xbox');
@@ -206,9 +208,9 @@ test('layout suggestion requires consent, other layouts and physical capture per
 test('failed save, dependency checks and initial loading all offer recovery',async({page,editor})=>{
   await page.getByLabel('Preferred mode').selectOption('xbox');
   await page.route('**/save',route=>route.fulfill({status:500,contentType:'application/json',body:JSON.stringify({message:'Could not save configuration. Check folder permissions.'})}));
-  await page.locator('#binding').fill('B');await page.getByRole('button',{name:'Save configuration'}).click();
+  await setXbox(page,'B');await page.getByRole('button',{name:'Save configuration'}).click();
   await expect(page.locator('#message')).toContainText('Your changes remain');
-  await expect(page.locator('#binding')).toHaveValue('B');
+  await expect(page.locator('#xbox-output-0')).toHaveValue('B');
   await page.unroute('**/save');await page.getByRole('button',{name:'Save configuration'}).click();
   await expect(page.locator('#message')).toContainText('Saved.');
   await page.route('**/dependencies',route=>route.fulfill({status:503,contentType:'application/json',body:'{"message":"Check unavailable"}'}));
@@ -228,7 +230,7 @@ test('keyboard focus, text contrast and 320px layout remain usable',async({page,
   const marker=page.getByRole('button',{name:'Quadrant button 2',exact:true});
   await marker.focus();await marker.press('Space');
   await expect(page.getByLabel('Physical control or action')).toHaveValue('buttons:q2');
-  await expect(page.locator('#binding')).toBeFocused();
+  await expect(page.locator('#xbox-output-0')).toBeFocused();
   const ratios=await page.evaluate(()=>{
     const luminance=color=>{const rgb=color.match(/[\d.]+/g).slice(0,3).map(v=>Number(v)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
     return [...document.querySelectorAll('h1,h2,h3,p,label,button,select,input,strong')].filter(el=>el.getClientRects().length && !el.disabled && el.textContent.trim()).map(el=>{
@@ -249,16 +251,16 @@ test('a narrow binding edit can be saved without opening diagrams or calibration
   await page.getByLabel('Preferred mode').selectOption('xbox');
   await expect(page.locator('#photo-panel')).not.toHaveAttribute('open','');
   await expect(page.locator('#calibration')).not.toHaveAttribute('open','');
-  const binding=await page.locator('#binding').boundingBox();
+  const binding=await page.locator('#xbox-output-0').boundingBox();
   const save=await page.locator('#save').boundingBox();
   expect(save.y-binding.y).toBeLessThan(400);
-  await page.locator('#binding').fill('RB');await page.getByRole('button',{name:'Save configuration'}).click();
+  await setXbox(page,'RB');await page.getByRole('button',{name:'Save configuration'}).click();
   await expect(page.locator('#message')).toContainText('Saved.');
   await page.locator('#overview > summary').click();
   await expect(page.locator('[data-mapping="buttons:s1"]')).toContainText('RB');
   await page.getByRole('button',{name:'Edit Quadrant 2',exact:true}).click();
   await expect(page.locator('#control')).toHaveValue('buttons:q2');
-  await expect(page.locator('#binding')).toBeFocused();
+  await expect(page.locator('#xbox-output-0')).toBeFocused();
   expect(editor.external).toEqual([]);
 });
 
@@ -275,4 +277,81 @@ test('numeric errors reveal calibration and associate the remedy with its field'
   await expect(page.locator('#poll_hz-error')).toBeEmpty();
   await page.getByRole('button',{name:'Save configuration'}).click();
   await expect(page.locator('#message')).toContainText('Saved.');
+});
+
+async function setXbox(page, value) {
+  const rows=page.locator('#xbox-rows .xbox-output-row');
+  while(await rows.count()>1) await rows.last().getByRole('button').click();
+  for(const [index,part] of value.split('+').entries()) {
+    if(index) await page.getByRole('button',{name:'Add button',exact:true}).click();
+    await page.getByLabel('Xbox button '+(index+1),{exact:true}).selectOption(part);
+  }
+}
+
+test('both binding editors remain usable at a 200% zoom-equivalent viewport',async({browser,editor})=>{
+  // A 1280px display at 200% zoom exposes 640 CSS pixels with a 2x scale.
+  const context=await browser.newContext({viewport:{width:640,height:500},deviceScaleFactor:2});
+  const page=await context.newPage();
+  page.on('request',request=>{if(!request.url().startsWith(editor.url) && !request.url().startsWith('data:')) editor.external.push(request.url());});
+  await page.goto(editor.url);
+  try {
+  for(const mode of ['xbox','keyboard']) {
+    await page.getByLabel('Preferred mode').selectOption(mode);
+    const field=page.locator(mode==='xbox'?'#xbox-output-0':'#binding');
+    await field.focus();await expect(field).toBeFocused();
+    await expect(field).toBeInViewport();
+    await expect(page.locator('#save')).toBeVisible();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    await page.screenshot({path:'test-results/'+mode+'-zoom.png',fullPage:true});
+  }
+  } finally { await context.close(); }
+  expect(editor.external).toEqual([]);
+});
+test('Xbox dropdown combinations, triggers and removal save without changing profile format',async({page,editor})=>{
+  await page.getByLabel('Preferred mode').selectOption('xbox');
+  await expect(page.locator('#keyboard-binding')).toBeHidden();
+  await expect(page.locator('#xbox-output-0 option[value="LT"]')).toHaveText('LT (Default unverified)');
+  await setXbox(page,'LT+RT+A');
+  await expect(page.locator('#xbox-output-2 option[value="LT"]')).toBeDisabled();
+  await page.getByRole('button',{name:'Add button',exact:true}).click();
+  await page.getByRole('button',{name:'Save configuration'}).click();
+  await expect(page.locator('#message')).toContainText('Saved.');
+  let saved=JSON.parse(await readFile(join(editor.root,'.local/config.json'),'utf8'));
+  expect(saved.profiles.xbox.version).toBe(1);expect(saved.profiles.xbox.buttons.s1).toBe('LT+RT+A');
+  await page.reload();await expect(page.locator('#xbox-output-2')).toHaveValue('A');
+  await setXbox(page,'');await expect(page.locator('#xbox-output-0')).toHaveValue('');
+  await page.getByRole('button',{name:'Save configuration'}).click();
+  await expect(page.locator('#message')).toContainText('Saved.');
+  saved=JSON.parse(await readFile(join(editor.root,'.local/config.json'),'utf8'));
+  expect(saved.profiles.xbox.buttons.s1).toBe('');expect(editor.external).toEqual([]);
+});
+
+test('keyboard capture accepts standalone modifiers and extended keys with honest action hints',async({page,editor})=>{
+  await page.getByLabel('Preferred mode').selectOption('keyboard');
+  await expect(page.getByLabel('Default AC8 PC action')).toHaveAttribute('readonly','');
+  await expect(page.getByLabel('Default AC8 PC action')).toHaveValue('Choose a keyboard layout to identify this key.');
+  await page.getByLabel('Layout used in the game').selectOption('00000409');
+  await expect(page.getByLabel('Default AC8 PC action')).toHaveValue('Default not verified; set this action manually in game.');
+  for(const key of ['ControlLeft','ShiftRight','AltLeft','PrintScreen','F13','F24']) {
+    await page.getByRole('button',{name:'Capture key',exact:true}).click();
+    if (key==='F13' || key==='F24') await page.locator('#binding').dispatchEvent('keydown',{key,code:key});
+    else await page.locator('#binding').press(key);
+    await expect(page.locator('#binding')).toHaveValue(key);
+  }
+  await page.getByRole('button',{name:'Capture key',exact:true}).click();
+  await page.locator('#binding').press('Control+KeyA');
+  await expect(page.locator('#binding')).toHaveValue('ctrl+KeyA');
+  await page.getByRole('button',{name:'Save configuration'}).click();
+  await expect(page.locator('#message')).toContainText('Saved.');
+  const saved=JSON.parse(await readFile(join(editor.root,'.local/config.json'),'utf8'));
+  expect(saved.profiles.keyboard.buttons.s1).toEqual({code:'KeyA',modifiers:['ctrl']});
+  await page.screenshot({path:'test-results/keyboard-desktop.png',fullPage:true});
+  await page.setViewportSize({width:320,height:800});
+  await page.screenshot({path:'test-results/keyboard-narrow.png',fullPage:true});
+  expect(await page.getByLabel('Default AC8 PC action').evaluate(input=>input.scrollHeight<=input.clientHeight)).toBe(true);
+  await page.locator('#binding').fill('');
+  await expect(page.getByLabel('Default AC8 PC action')).toHaveValue('Unassigned.');
+  await page.setViewportSize({width:320,height:800});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  expect(editor.external).toEqual([]);
 });

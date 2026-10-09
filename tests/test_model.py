@@ -146,3 +146,22 @@ def test_selected_throttle_uses_shared_response_and_high_g_restores_current_sour
     assert model.report(state, cfg, throttle=-1)['rt'] == 1
     state['stick']['buttons'] = []
     assert model.report(state, cfg, throttle=-1)['rt'] == 0
+@pytest.mark.parametrize('mode', ['xbox', 'target-xbox'])
+def test_trigger_bindings_combine_with_throttle_and_release(mode):
+    from app.model import report, defaults, validate, BITS
+    cfg = defaults(mode)
+    cfg['buttons']['s1'] = 'A+LT'
+    cfg['buttons']['q1'] = 'RT'
+    validate(mode, cfg)
+    state = {'stick': {'axes': [0]*6, 'hat': [0,0], 'buttons': [1]},
+             'quadrant': {'axes': [0]*6, 'hat': [0,0], 'buttons': [1]}}
+    out = report(state, cfg, throttle=-.5)
+    assert out['lt'] == out['rt'] == 1 and out['buttons'] == BITS['A']
+    state['quadrant']['buttons'] = []
+    out = report(state, cfg, throttle=-.5)
+    assert out['lt'] == 1 and 0 < out['rt'] < 1
+    state['stick']['buttons'] = [cfg['high_g_button']]
+    assert report(state, cfg, throttle=.5)['lt'] == report(state, cfg, throttle=.5)['rt'] == 1
+    state['stick']['buttons'] = []
+    out = report(state, cfg, throttle=.5)
+    assert 0 < out['lt'] < 1 and out['rt'] == 0

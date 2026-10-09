@@ -165,3 +165,20 @@ def test_device_vectors_load_without_private_art_and_only_allow_fixed_routes(tmp
         for route in ('device/private.png','device/sidestick.png','device/../config.json','device/%2e%2e/config.json','device/private.svg','device/sidestick.webp'):
             code,body,_=http(server,conn,'GET',route)
             assert code==404 and json.loads(body)=={'message':'Not found.'}
+def test_key_action_endpoint_is_guarded_and_does_not_save(tmp_path, monkeypatch):
+    fixture = {'layouts': [], 'suggested': None, 'ready': True}
+    with live(tmp_path, fixture) as (server, conn):
+        state = json.loads(http(server, conn, 'GET', 'state')[1])
+        assert len(state['game_controls']['xbox']) == 16
+        payload = json.dumps({'layout': None, 'binding': 'a'})
+        code, body, _ = http(server, conn, 'POST', 'key-action', payload)
+        assert code == 200 and json.loads(body)['status'] == 'needs-layout'
+        assert http(server, conn, 'POST', 'key-action', payload, {'Origin': 'https://invalid.example'})[0] == 403
+        for body in ('[]', '{}', '{"layout":null,"binding":null}'):
+            assert http(server, conn, 'POST', 'key-action', body)[0] == 400
+        assert not (tmp_path / '.local').exists()
+    monkeypatch.setattr(s, 'WindowsLayouts', lambda: SimpleNamespace(items=[], suggested=None, resolve=lambda *a: (1004, [])))
+    monkeypatch.setattr(s, 'Joysticks', lambda: SimpleNamespace())
+    with live(tmp_path, None) as (server, conn):
+        code, body, _ = http(server, conn, 'POST', 'key-action', json.dumps({'layout': '00000409', 'binding': 'a'}))
+        assert code == 200 and json.loads(body)['status'] == 'unknown'

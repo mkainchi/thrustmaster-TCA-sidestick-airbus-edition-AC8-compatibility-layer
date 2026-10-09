@@ -6,12 +6,16 @@ h1 { font-size: 1.9rem; margin: 0 0 8px; text-wrap: balance; } h2 { font-size: 1
 p { margin: 10px 0; max-width: 72ch; color: var(--secondary); } p:empty { display: none; }
 section { margin-top: 28px; padding: 24px 0; border-top: 1px solid var(--border); }
 label { display: block; margin: 14px 0 6px; font-weight: 600; }
-input, select, button { font: inherit; color: var(--foreground); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; min-height: 44px; padding: 8px 12px; max-width: 100%; }
-input:not([type=checkbox]), select { width: 100%; } #mode { max-width: 480px; }
+input, select, button, textarea { font: inherit; color: var(--foreground); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; min-height: 44px; padding: 8px 12px; max-width: 100%; }
+input:not([type=checkbox]), select, textarea { width: 100%; } #mode { max-width: 480px; }
+textarea { resize: vertical; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.xbox-output-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-bottom: 10px; }
+#xbox-binding { margin-bottom: 0; }
 input[type=checkbox] { min-height: auto; width: 18px; height: 18px; accent-color: var(--accent); }
 input::placeholder { color: var(--secondary); opacity: 1; }
 button { cursor: pointer; } button:hover { border-color: var(--accent); } button:disabled { opacity: .55; cursor: default; }
-button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible, .photo-scroll:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible, a:focus-visible, .photo-scroll:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 button:active { transform: translateY(1px); } #save { background: var(--accent); color: var(--background); font-weight: 700; }
 a { color: var(--accent); text-underline-offset: 4px; overflow-wrap: anywhere; }
 details { margin-block: 18px; } summary { cursor: pointer; min-height: 44px; padding-block: 10px; font-weight: 600; }
