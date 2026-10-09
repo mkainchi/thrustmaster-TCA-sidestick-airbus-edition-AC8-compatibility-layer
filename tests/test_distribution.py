@@ -11,6 +11,27 @@ from tools import distribution as d
 from tools import privacy_check as p
 
 
+def test_public_dependencies_and_packages_survive_windows_git_checkout(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    source = tmp_path / 'source'
+    source.mkdir()
+    for relative in p.inventory(root):
+        path = source / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes((root / relative).read_bytes())
+    for args in (['init'], ['-c', 'core.autocrlf=true', 'add', '--all']):
+        subprocess.run(['git', '-C', str(source), *args], check=True, capture_output=True)
+    checkout = tmp_path / 'checkout'
+    subprocess.run(['git', '-C', str(source), '-c', 'core.autocrlf=true',
+                    'checkout-index', '--all', '--prefix=' + checkout.as_posix() + '/'],
+                   check=True, capture_output=True)
+    d.locked_files(checkout)
+    d.skill_files(checkout)
+    for mode in d.MODES:
+        for name, data in d.payload(checkout, mode).items():
+            assert (checkout / 'setups' / mode / name).read_bytes() == data
+
+
 def repository(root, monkeypatch):
     files = {name:b'original' for name in (*d.ROOT_FILES,*d.APP_FILES,*d.DOC_FILES)}
     files.update({'runtime/python.exe':b'python','runtime/LICENSE.txt':b'PSF notice',

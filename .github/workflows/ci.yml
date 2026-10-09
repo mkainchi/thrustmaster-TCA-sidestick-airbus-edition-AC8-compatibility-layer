@@ -6,6 +6,8 @@ jobs:
   acceptance:
     runs-on: windows-latest
     timeout-minutes: 20
+    env:
+      TCA_TEST_PYTHON: python
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
@@ -16,9 +18,9 @@ jobs:
         with:
           node-version: '26.1.0'
           cache: npm
-      - run: python -m venv .local/dev-venv
-      - run: .local/dev-venv/Scripts/python.exe -m pip install -r requirements-dev.txt
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pip check
       - run: npm.cmd ci
       - run: npx.cmd playwright install chromium
-      - run: .local/dev-venv/Scripts/python.exe -m tools.distribution check
-      - run: .local/dev-venv/Scripts/python.exe -m tools.distribution release
+      - run: python -m tools.distribution check
+      - run: python -m tools.distribution release

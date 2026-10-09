@@ -13,7 +13,7 @@ test-results/
 **/diagnostics/
 **/screenshots/
 **/__pycache__/
-*.py[cod]
+*.py[co]
 *.log
 *.dmp
 *.sav

@@ -112,8 +112,10 @@ Development requires Python 3.12 and Node.js 26. Gamer packages include their ow
 Set up in PowerShell:
 
 ```powershell
-py -3.12 -m venv .local/dev-venv
-.local/dev-venv/Scripts/python.exe -m pip install -r requirements-dev.txt
+py -3.12 -m venv .venv
+.venv/Scripts/python.exe -m pip install -r requirements-dev.txt
+.venv/Scripts/python.exe -m pip check
+$env:TCA_TEST_PYTHON = '.venv/Scripts/python.exe'
 npm.cmd ci
 npx.cmd playwright install chromium
 ```
@@ -121,11 +123,11 @@ npx.cmd playwright install chromium
 After source or documentation changes, regenerate packages and run every check:
 
 ```powershell
-.local/dev-venv/Scripts/python.exe -m tools.distribution packages
-.local/dev-venv/Scripts/python.exe -m pytest -q
+.venv/Scripts/python.exe -m tools.distribution packages
+.venv/Scripts/python.exe -m pytest -q
 npm.cmd test
 npm.cmd run test:e2e
-.local/dev-venv/Scripts/python.exe -m tools.distribution check
+.venv/Scripts/python.exe -m tools.distribution check
 ```
 
 Do not edit generated copies. Regeneration preserves private settings. [Validation](docs/VALIDATION.md#automated-checks) defines the 100% coverage gates and separate hardware acceptance.
@@ -133,17 +135,17 @@ Do not edit generated copies. Regeneration preserves private settings. [Validati
 ### Build release archives
 
 ```powershell
-.local/dev-venv/Scripts/python.exe -m tools.distribution release
+.venv/Scripts/python.exe -m tools.distribution release
 ```
 
-This repeats acceptance gates and builds deterministic allowlisted ZIPs with file hashes under `.local/releases/`. CI runs the same gates on Windows and checks generated copies.
+This repeats acceptance gates and builds deterministic allowlisted ZIPs with file hashes under `.local/releases/`. CI installs test packages into its configured Python, runs the same gates on Windows and checks generated copies. Public bundled runtime files stay in `runtime/` and `dependencies/`; personal settings and reports stay in `.local/`.
 
 ### Import preserved legacy profiles
 
 Run the library import once:
 
 ```powershell
-.local/dev-venv/Scripts/python.exe -c "from pathlib import Path; from tools.migrate import migrate; print(migrate(Path.cwd()))"
+.venv/Scripts/python.exe -c "from pathlib import Path; from tools.migrate import migrate; print(migrate(Path.cwd()))"
 ```
 
 Project context: [requirements](PRODUCT.md), [interface decisions](DESIGN.md), [pinned development skills](docs/SKILLS.md).

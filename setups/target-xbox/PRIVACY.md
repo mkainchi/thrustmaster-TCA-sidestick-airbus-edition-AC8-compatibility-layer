@@ -19,6 +19,8 @@ The application does not read game saves, credentials, network settings or unrel
 
 Each package stores mappings, installation paths, generated scripts, readiness/stop signals, session metadata, previous configuration and migrated legacy originals in ignored `.local/`. Skill reports, traces, screenshots, development environments and build archives also remain ignored.
 
+Public Python runtime dependencies belong in `runtime/` and `dependencies/`, including required `.pyd` extension modules. Development packages may use an ignored `.venv/` or CI's configured Python; they do not need to live in `.local/`. Development packages are not personal data and remain excluded from gamer archives by the release allowlist.
+
 ## Check before sharing
 
 Run `check_privacy.cmd` and review custom content yourself. The public project contains product names, generic VID/PID compatibility constants and example bindings. It excludes owner identity, personal paths, serials, USB instance paths, host inventory, game saves and diagnostic dumps.

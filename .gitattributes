@@ -1,0 +1,9 @@
+# Keep authored text consistent across developer and CI checkouts.
+* text=auto eol=lf
+*.cmd text eol=crlf
+# Hash-locked upstream files and generated packages must retain exact bytes.
+/.agents/skills/** -text
+/runtime/** -text
+/dependencies/** -text
+/dependencies/manifest.json text eol=lf
+/setups/** -text
