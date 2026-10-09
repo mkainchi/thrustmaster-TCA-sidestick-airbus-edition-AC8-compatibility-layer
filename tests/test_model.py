@@ -165,3 +165,29 @@ def test_trigger_bindings_combine_with_throttle_and_release(mode):
     state['stick']['buttons'] = []
     out = report(state, cfg, throttle=.5)
     assert 0 < out['lt'] < 1 and out['rt'] == 0
+def test_new_keyboard_defaults_follow_physical_reference_and_are_independent():
+    cfg = defaults('keyboard')
+    assert {key: binding['code'] for key,binding in cfg['keys'].items()} == dict(zip(
+        cfg['keys'], ['KeyA','KeyD','KeyW','KeyS','KeyQ','KeyE','Numpad8','Numpad2','Numpad4','Numpad6','Space','ControlLeft']))
+    assert [binding['code'] if binding else '' for binding in cfg['buttons'].values()] == [
+        'KeyJ','KeyL','KeyK','KeyT','','KeyX','KeyV','KeyM','KeyJ','','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','','KeyT','KeyL','KeyX',*['']*14]
+    assert all(binding['modifiers'] == [] for section in ('keys','buttons') for binding in cfg[section].values() if binding)
+    cfg['keys']['brake']['modifiers'].append('shift')
+    assert defaults('keyboard')['keys']['brake']['modifiers'] == []
+    cfg['buttons']['s2']['modifiers'].append('ctrl')
+    assert cfg['buttons']['q1']['modifiers'] == []
+
+
+def test_legacy_unconfigured_profiles_load_unchanged_but_cannot_save_or_generate(tmp_path):
+    from pathlib import Path
+    legacy = json.loads((Path(__file__).parent/'fixtures/profiles.json').read_text(encoding='utf-8'))
+    saved = {'version':1,'preferred_mode':'xbox','target_path':'','profiles':legacy}
+    store = Store(tmp_path);store.local.mkdir();raw = json.dumps(saved).encode('utf-8');store.path.write_bytes(raw)
+    assert store.load() == saved and store.path.read_bytes() == raw
+    with pytest.raises(ValueError, match='layout'):store.save('keyboard', legacy['keyboard'], '')
+    from app.target import generate
+    with pytest.raises(ValueError, match='layout'):generate('keyboard', legacy['keyboard'], store.local, 'test', lambda *a:(1004,[]))
+    store.save('xbox', defaults('xbox'), '')
+    assert store.load()['profiles']['keyboard'] == legacy['keyboard']
+    saved['profiles']['keyboard']['layout'] = 'invalid';store.path.write_text(json.dumps(saved),encoding='utf-8')
+    with pytest.raises(ValueError, match='layout'):store.load()

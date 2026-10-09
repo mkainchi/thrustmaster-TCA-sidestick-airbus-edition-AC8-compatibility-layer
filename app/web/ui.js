@@ -28,7 +28,7 @@ export async function start(doc, win, fetcher) {
     const lookup = async () => {
       let text;
       try { text = (await api('key-action', {layout, binding})).text; }
-      catch { text = 'Default not verified; set this action manually in game.'; }
+      catch { text = 'Default action unavailable; set its action manually in game.'; }
       if (closed || generation !== hintGeneration) return;
       $('key-action').value = text;
       $('key-action-help').textContent = text;
@@ -138,7 +138,7 @@ export async function start(doc, win, fetcher) {
     clearError('binding');
     $('binding').value = bindingLabel(profile[group][key]);
     $('keyboard-binding').hidden = !keyboard(); $('xbox-binding').hidden = keyboard();
-    $('binding-help').textContent = keyboard() ? 'Type a character or named key (Space, Enter, ControlLeft, PrintScreen, F1–F24), or capture a physical key. Leave a button blank to unassign it.' : 'Choose an output; add buttons for a combination. LT and RT send full trigger pressure while held. Default AC8 PC actions are shown only when verified; configure unverified actions in game.';
+    $('binding-help').textContent = keyboard() ? 'Type a character or named key, or capture a key. New defaults use physical US QWERTY positions: KeyQ is A on AZERTY. Actions follow the supplied AC8 reference. Leave a button blank to unassign it.' : 'Choose an output; add buttons for a combination. LT and RT send full trigger pressure while held. Actions follow the supplied AC8 reference; customized game bindings may differ.';
     if (keyboard()) keyHint(); else { hintGeneration++; win.clearTimeout(hintTimer); xboxRows(); }
     $('special-binding').textContent = group === 'buttons' && key === 's' + profile.high_g_button ? 'This button holds acceleration and braking together. Its High-G override takes priority over throttle input; an assigned button binding also remains active. Change or disable High-G in calibration.' : '';
     const quadrant = group === 'buttons' && key.startsWith('q');

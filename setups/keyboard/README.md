@@ -48,7 +48,7 @@ Switching modes asks before discarding unsaved edits.
 
 In Xbox modes, choose an output from the button dropdown. Select **Add button** to build a combination, or **Remove** to clear an output. Choosing **Unassigned** for the last output clears the mapping. LT/RT output full trigger pressure while held; release restores the active throttle's output. High-G keeps priority.
 
-Dropdowns and the keyboard's read-only **Default AC8 PC action** textbox show only verified game defaults. No complete official PC binding table has been verified yet, so current entries use **Default unverified** or tell you to set the action manually in game. Saved example profiles and your game's customized bindings may differ from its defaults; check the game settings.
+Dropdowns and the keyboard's read-only **Default AC8 PC action** textbox use the **user-supplied AC8 controls** reference. Unlisted keys require manual configuration in game. L3 deploys flares only together with R3; R3 alone changes view. Saved profiles and customized game bindings may differ from the reference; check the game settings.
 
 ### Controls and calibration
 
@@ -60,11 +60,17 @@ High-G overrides throttle while held; an assigned button binding still fires. Se
 
 Calibration adjusts axes, inversion, deadzones, yaw threshold, camera strength, throttle neutral band and input frequency. X/Y/Z/R/U/V are Windows axes; defaults use X/Y and R twist, with Z throttle for TARGET Combined. The sidestick slider uses physical Z/THR; the throttle axis selector configures the quadrant in direct/keyboard modes and the Combined throttle output in TARGET → Xbox.
 
-Buttons 11–14 are ACE COMBAT 7/8 wingman examples: Xbox D-pad or keyboard F1–F4. Check these and all other bindings in your game's settings.
+New/reset profiles assign buttons 11–14 to wingman orders: Xbox D-pad or keyboard Up/Down/Left/Right arrows. Existing saved mappings, including older F1–F4 examples, remain unchanged.
 
 ### Keyboard bindings
 
 No QWERTY or AZERTY layout is assumed. Typed characters use the selected layout; **Capture key** stores the physical key and modifier chord instead.
+
+The reference and new/reset profiles use **physical US QWERTY positions**. For example, `KeyQ` is Q's QWERTY position but produces A on French AZERTY: capturing that key or typing `a` with AZERTY selected shows **Yaw left**. Modifiers must match exactly; an added Shift/Ctrl/Alt chord is not assumed to have the same game action.
+
+New/reset keyboard profiles use A/D for roll, W/S for pitch down/up, Q/E for yaw, Space/left Ctrl for acceleration/braking and numpad 8/2/4/6 for camera. Sidestick buttons 1–16 use J, L, K, T, unassigned (High-G), X, V, M, J, unassigned, Up, Down, Left, Right, unassigned, T. Quadrant buttons 1/2 use L/X; other quadrant buttons remain unassigned. START/pause and LB+RB have no single keyboard equivalent in the supplied list, so their keyboard buttons remain unassigned. Reset changes only the current page until you save; it does not overwrite existing profiles automatically.
+
+The reference also includes previous weapon (I), missiles/special weapons (1/2/3), mouse-camera control (F), camera 7/8/9/0 as alternatives to the numpad, autopilot (Z/C), gear (R), view (V), flares (X), target (T) and radar map (M). Mouse alternatives are machine gun (left click), missile/weapon (right click), next/previous weapon (wheel down/up) and target (middle click). These are reference information; keyboard mode emits the keyboard alternatives, not mouse events.
 
 Named keys include `Space`, `Tab`, `Enter`, arrow keys, `PrintScreen`, `F1`–`F24` and `Numpad0`–`Numpad9`. Capture or type standalone modifiers such as `ControlLeft`, `ShiftRight` and `AltLeft`. Standalone modifiers are captured on release; chords complete when their main key is pressed. System/media keys and keys intercepted by Windows or the browser may be unavailable to capture. Leave a button blank to unassign it. Unsupported characters, input-method-editor (IME) input and ambiguous capture receive inline errors.
 

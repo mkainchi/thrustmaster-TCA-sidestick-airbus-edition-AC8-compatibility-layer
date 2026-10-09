@@ -371,7 +371,7 @@ it('refreshes read-only action hints and discards stale or failed lookups withou
   expect(t.$('key-action').value).toBe('New default');
   t.failure='key-action';t.$('binding').value='F24';t.$('binding').oninput();
   expect(t.$('message').textContent).toBe('Unsaved changes.');
-  await vi.waitFor(()=>expect(t.$('key-action').value).toContain('set this action manually'));
+  await vi.waitFor(()=>expect(t.$('key-action').value).toContain('set its action manually'));
   await t.$('save').onclick();expect(t.saves.at(-1).profile.buttons.s3).toBe('F24');
   t.failure=null;let finish;t.hintWait=new Promise(resolve=>finish=resolve);
   t.$('control').onchange();await t.mode('xbox');finish();await Promise.resolve();await Promise.resolve();

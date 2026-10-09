@@ -70,6 +70,42 @@ def test_installed_target_compiles_and_replays_shared_throttle_without_device_ca
                                for i, code in enumerate(('PrintScreen', 'F13', 'F24', 'ControlLeft', 'ShiftRight', 'AltLeft'))})
     from app.keyboard import physical_binding
     script = generate(mode, cfg, local, 'validation', lambda b, l: physical_binding(b) if isinstance(b, dict) else (1004, []), copilot)
+    if mode == 'keyboard':
+        assert 'define ACTION_ACCEL 1044' in script and 'define ACTION_BRAKE 1224' in script
+        assert 'ActKey(1044);' in script and 'ActKey(1224);' in script
+        # Replace only generated output calls; official headers remain unchanged.
+        # This records transitions without sending keys or initializing hardware.
+        script = script.replace('ActKey(', 'RecordKey(').replace('int ValidateProfile()', 'int ValidateState()')
+        position = script.index('int throttleZone')
+        script = script[:position] + '''int recorded[16], recordedCount;
+int RecordKey(int value) { recorded[recordedCount] = value; recordedCount = recordedCount + 1; }
+''' + script[position:] + '''
+int ValidateProfile()
+{
+    int result = ValidateState();
+    if(result) return result;
+    throttleZone = 0; highG = 0; accelHeld = 0; brakeHeld = 0; recordedCount = 0;
+    ApplyThrottle();
+    if(recordedCount) return 30;
+    throttleZone = -1; ApplyThrottle();
+    if((recordedCount != 1) | (recorded[0] != (ACTION_ACCEL | KEYON))) return 31;
+    highG = 1; ApplyThrottle();
+    if((recordedCount != 2) | (recorded[1] != (ACTION_BRAKE | KEYON))) return 32;
+    throttleZone = 1; ApplyThrottle();
+    if(recordedCount != 2) return 33;
+    highG = 0; ApplyThrottle();
+    if((recordedCount != 3) | (recorded[2] != ACTION_ACCEL)) return 34;
+    throttleZone = 0; ApplyThrottle();
+    if((recordedCount != 4) | (recorded[3] != ACTION_BRAKE)) return 35;
+    throttleZone = -1; ApplyThrottle(); throttleZone = 1; ApplyThrottle();
+    if((recordedCount != 7) | (recorded[4] != (ACTION_ACCEL | KEYON))) return 36;
+    if((recorded[5] != ACTION_ACCEL) | (recorded[6] != (ACTION_BRAKE | KEYON))) return 37;
+    throttleZone = 0; ApplyThrottle();
+    if((recordedCount != 8) | (recorded[7] != ACTION_BRAKE)) return 38;
+    if(accelHeld | brakeHeld) return 39;
+    return 0;
+}
+'''
     (local / 'profile.tmc').write_text(script, encoding='utf-8')
     result = subprocess.run([str(folder / 'Interpreter.exe'), 'profile.tmc', 'ValidateProfile'], cwd=local, capture_output=True, timeout=20)
     output = (result.stdout + result.stderr).decode(errors='replace')

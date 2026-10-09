@@ -1,20 +1,39 @@
-"""Offline AC8 PC default-action hints, kept separate from editable examples.
-
-Only verified defaults belong here. Entries carry an action and source URL;
-keyboard entries additionally name the reference Windows layout, HID and sorted
-modifiers in their key. No complete official PC binding table is verified yet.
-"""
+"""User-supplied AC8 reference; keyboard keys are physical US QWERTY positions."""
 import json
 from .keyboard import physical_binding
 from .model import XBOX_OUTPUTS
 
-XBOX_DEFAULTS = {}
-KEYBOARD_DEFAULTS = {}
-UNKNOWN = 'Default not verified; set this action manually in game.'
+SOURCE = 'User-supplied AC8 controls'
+XBOX_NAMES = {'BACK': 'View / BACK', 'START': 'Menu / START'}
+XBOX_DEFAULTS = {name: {'action': action, 'source': SOURCE} for name, action in {
+    'A': 'Fire machine gun', 'B': 'Fire missile / Weapon', 'X': 'Change weapon', 'Y': 'Change target',
+    'LB': 'Yaw left', 'RB': 'Yaw right', 'LT': 'Decelerate', 'RT': 'Accelerate',
+    'BACK': 'Toggle radar map display', 'START': 'Pause menu on/off',
+    'L3': 'Deploy flares with R3', 'R3': 'Change view; deploy flares with L3',
+    'UP': 'Order: Forward attack', 'DOWN': 'Order: Cover',
+    'LEFT': 'Order: Disp. atk', 'RIGHT': 'Order: SP weapons on/off',
+}.items()}
+KEYBOARD_DEFAULTS = {(physical_binding({'code': code, 'modifiers': []})[0], ()):
+                    {'action': action, 'source': SOURCE} for code, action in {
+    'KeyS': 'Ascend / Pitch up', 'KeyW': 'Descend / Pitch down',
+    'KeyA': 'Turn left / Roll left', 'KeyD': 'Turn right / Roll right',
+    'KeyQ': 'Yaw left', 'KeyE': 'Yaw right', 'Space': 'Accelerate', 'ControlLeft': 'Decelerate',
+    'KeyJ': 'Fire machine gun', 'KeyL': 'Fire missile / Weapon',
+    'KeyK': 'Change weapon / Next weapon', 'KeyI': 'Change weapon / Previous weapon',
+    'Digit1': 'Standard missiles', 'Digit2': 'Special weapon 1', 'Digit3': 'Special weapon 2',
+    'KeyF': 'Camera control (mouse)', 'Digit7': 'Camera up', 'Numpad8': 'Camera up',
+    'Digit8': 'Camera down', 'Numpad2': 'Camera down', 'Digit9': 'Camera left', 'Numpad4': 'Camera left',
+    'Digit0': 'Camera right', 'Numpad6': 'Camera right', 'KeyZ': 'Autopilot', 'KeyC': 'Autopilot',
+    'KeyR': 'Gear down / Gear up', 'KeyV': 'Change view', 'KeyX': 'Deploy flares',
+    'KeyT': 'Change target', 'KeyM': 'Switch radar map',
+    'ArrowUp': 'Order: Forward attack', 'ArrowDown': 'Order: Cover',
+    'ArrowLeft': 'Order: Disp. atk', 'ArrowRight': 'Order: SP weapons on/off',
+}.items()}
+UNKNOWN = 'No default action listed; set this action manually in game.'
 
 
 def xbox_choices():
-    return [{'value': name, 'label': f'{name} ({XBOX_DEFAULTS[name]["action"] if name in XBOX_DEFAULTS else "Default unverified"})'}
+    return [{'value': name, 'label': f'{XBOX_NAMES.get(name, name)} ({XBOX_DEFAULTS[name]["action"] if name in XBOX_DEFAULTS else "No default action listed"})'}
             for name in XBOX_OUTPUTS]
 
 
@@ -33,5 +52,5 @@ def key_action(binding, layout, resolve):
         hid, modifiers = resolve(binding, layout)
     except ValueError as error:
         return {'status': 'unsupported', 'text': str(error)}
-    entry = KEYBOARD_DEFAULTS.get((layout, hid, tuple(sorted(modifiers))))
+    entry = KEYBOARD_DEFAULTS.get((hid, tuple(sorted(modifiers))))
     return {'status': 'known' if entry else 'unknown', 'text': entry['action'] if entry else UNKNOWN}

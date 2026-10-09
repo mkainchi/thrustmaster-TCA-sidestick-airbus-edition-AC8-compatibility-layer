@@ -18,7 +18,7 @@ Users must be able to identify controls, save independent mode profiles, resolve
 
 Physical button presses select the matching device and binding while the editor is idle. The sidestick slider and quadrant's left lever share acceleration/braking; the last throttle moved beyond a small noise threshold takes control.
 
-Xbox mappings use addable native button dropdowns, including full-pressure LT/RT. Keyboard mappings accept characters, named standard keys and physical capture. Default-action hints reference verified AC8 PC bindings; unverified entries explicitly require configuration in game. Example profiles are not evidence of game defaults.
+Xbox mappings use addable native button dropdowns, including full-pressure LT/RT. Keyboard mappings accept characters, named standard keys and physical capture. Action hints use a user-supplied AC8 control reference; unlisted keys require configuration in game. New/reset keyboard profiles use physical US QWERTY positions, including Space/left Ctrl for throttle. Saved profiles are preserved and may differ from the reference.
 
 ## Operating Context
 

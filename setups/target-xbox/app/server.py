@@ -5,7 +5,7 @@ from pathlib import Path
 import secrets
 from urllib.parse import urlsplit
 from .dependencies import status, TARGET_URL, VIGEM_URL
-from .keyboard import WindowsLayouts
+from .keyboard import WindowsLayouts, CODE_HID, physical_binding
 from .model import ConfigurationError, Store, MODES, defaults, validate
 from .target import generate
 from .windows import Joysticks
@@ -31,6 +31,19 @@ def create_server(root, fixture=None, initial_mode=None):
 
     def fixture_data():
         return json.loads(Path(fixture).read_text(encoding='utf-8')) if isinstance(fixture, (str, Path)) else fixture
+
+    def fixture_resolve(binding, layout):
+        data = fixture_data()
+        if layout not in {item['id'] for item in data['layouts']}:
+            raise ValueError('Select a currently installed Windows keyboard layout first.')
+        if isinstance(binding, dict):
+            return physical_binding(binding)
+        if binding in CODE_HID and not binding.startswith(('Key', 'Digit')):
+            return physical_binding({'code': binding, 'modifiers': []})
+        translated = data.get('key_translations', {}).get(layout, {}).get(binding)
+        if translated is None:
+            raise ValueError('A character is unavailable in the selected layout. Capture its physical key instead.')
+        return physical_binding(translated)
 
     def dependencies(mode, path):
         if fixture is None:
@@ -117,7 +130,7 @@ def create_server(root, fixture=None, initial_mode=None):
                 if route == 'key-action':
                     if not isinstance(data, dict) or set(data) != {'layout', 'binding'}:
                         raise ValueError('Invalid key-action request.')
-                    resolver = (lambda binding, layout: (1004, [])) if fixture is not None else layouts.resolve
+                    resolver = fixture_resolve if fixture is not None else layouts.resolve
                     self.json(200, key_action(data['binding'], data['layout'], resolver))
                     return
                 fields = {'mode', 'target_path'} | ({'profile'} if route == 'save' else set())
@@ -134,7 +147,7 @@ def create_server(root, fixture=None, initial_mode=None):
                     available = fixture_data()['layouts'] if fixture is not None else layouts.items
                     if cfg['layout'] not in {item['id'] for item in available}:
                         raise ConfigurationError('Select a currently installed keyboard layout.', 'layout')
-                    resolver = (lambda binding, layout: (1004, [])) if fixture is not None else layouts.resolve
+                    resolver = fixture_resolve if fixture is not None else layouts.resolve
                     for section in ('keys', 'buttons'):
                         for key, binding in cfg[section].items():
                             if binding != '':

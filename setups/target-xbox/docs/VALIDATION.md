@@ -18,7 +18,9 @@ Unit boundaries exercise Windows APIs, profiles, translation, migration, atomic 
 
 Synthetic input and rendered diagrams do not prove hardware behavior. Development skills, private reports and browser binaries are excluded from releases.
 
-Binding-editor checks cover Xbox dropdown combinations/removal/duplicate prevention and old profile compatibility, LT/RT pressure/release/High-G behavior, standalone modifiers and extended keyboard usages, layout-aware default lookup, stale responses and lookup failure recovery. Verified action lookup uses synthetic catalogue fixtures; those action names are not production game claims. Installed TARGET validation compiles captured PrintScreen, F13/F24 and modifier bindings using private copies of official headers.
+Binding-editor checks cover Xbox dropdown combinations/removal/duplicate prevention and old profile compatibility, LT/RT pressure/release/High-G behavior, standalone modifiers and extended keyboard usages, layout-aware action lookup, stale responses and lookup failure recovery. The production catalogue uses the user-supplied AC8 reference; software checks do not verify the game's bindings. Tests cover every supplied keyboard alternative, QWERTY/AZERTY positions, exact modifiers, number-row/numpad distinctions and stick-click combinations. Legacy profiles, including an unconfigured keyboard layout, load unchanged; saving or starting keyboard output still requires an installed layout.
+
+Installed TARGET validation compiles captured PrintScreen, F13/F24 and modifier bindings using private copies of official headers. An offline recorder replaces generated output calls to verify Space/left Ctrl press/release, throttle transitions and High-G release without sending input or initializing devices.
 
 ## Runtime checks
 
@@ -46,7 +48,7 @@ These results describe checks already performed. They do not replace a fresh har
 | Official CPython archive SHA-256 and retained-file equality | Passed | The local `_pth` file is intentionally authored; every retained upstream binary/stdlib/notice is unchanged. |
 | ViGEmClient DLL equality with pinned vgamepad source archive | Passed | Pins the exact binary origin rather than guessing its internal build version. |
 | Installed TARGET Interpreter offline `ValidateProfile` for generated keyboard and Combined templates | Passed | Runs pure validation, without Init, hardware capture or output. Official headers were used only in ignored temporary compilation storage. |
-| Shared throttle ownership and keyboard state replay in installed TARGET Interpreter | Passed | Generated Pilot/Copilot keyboard and Combined profiles compile and pass pure replay; no directed physical input or game output is proven. |
+| Shared throttle ownership and keyboard state replay in installed TARGET Interpreter | Passed | Generated Pilot/Copilot keyboard and Combined profiles compile and pass pure replay, including recorded Space/left Ctrl output transitions; no directed physical input or game output is proven. |
 | Native WinMM input from both supported physical devices | Passed | Presence/neutral state read; no directed button/axis motion test was performed. |
 | Actual ViGEmBus virtual Xbox allocation, neutral report, XInput visibility and removal | Passed | Driver/output lifecycle check; not a game or movement check. |
 | Actual TARGET GUI `-r`, fresh readiness, Combined descriptor and cooperative stop | Incomplete | An initial profile wrote readiness and acknowledged stop, but its descriptor was unavailable to the bridge. Later GUI runs exited without readiness. The application refused startup and retained actionable recovery state. Stop TARGET and reconnect both devices before retrying this check. |
@@ -78,7 +80,9 @@ Check normal button taps select the exact button and device. Keep a switch held 
 
 Use a temporary text/key monitor. Explicitly select each layout used for play and check characters, physical capture and modifiers. Verify held/released flight, POV camera, throttle and High-G keys.
 
-Capture and release left/right Ctrl, Shift and Alt alone, then check Ctrl/Shift/Alt chords do not change after modifier release. Check PrintScreen and F13–F24 with hardware that exposes them, including held/released output. Confirm the default-action textbox follows the selected control/layout and identifies unverified defaults; set those actions manually in game.
+Capture and release left/right Ctrl, Shift and Alt alone, then check Ctrl/Shift/Alt chords do not change after modifier release. Check PrintScreen and F13–F24 with hardware that exposes them, including held/released output. Confirm the action textbox follows the selected control/layout and identifies unlisted actions; set those actions manually in game. On AZERTY, confirm physical KeyQ and typed `a` show Yaw left. Check number-row and numpad alternatives separately.
+
+For a new/reset keyboard profile, verify Space accelerates and left Ctrl brakes. Check both release at neutral/stop and that High-G release restores the active throttle's request. Confirm existing saved profiles keep their previous keys until explicitly reset and saved.
 
 After READY, keyboard throttle output must remain neutral until either throttle moves meaningfully. Repeat handoff, neutral, jitter and High-G checks using a key monitor.
 

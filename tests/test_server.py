@@ -181,4 +181,18 @@ def test_key_action_endpoint_is_guarded_and_does_not_save(tmp_path, monkeypatch)
     monkeypatch.setattr(s, 'Joysticks', lambda: SimpleNamespace())
     with live(tmp_path, None) as (server, conn):
         code, body, _ = http(server, conn, 'POST', 'key-action', json.dumps({'layout': '00000409', 'binding': 'a'}))
-        assert code == 200 and json.loads(body)['status'] == 'unknown'
+        assert code == 200 and json.loads(body)['status'] == 'known'
+def test_fixture_key_lookup_uses_explicit_translations_and_real_physical_keys(tmp_path):
+    fixture = {'layouts':[{'id':'0000040c','label':'AZERTY'}], 'suggested':None, 'ready':True,
+               'key_translations':{'0000040c':{'a':{'code':'KeyQ','modifiers':[]}}}}
+    with live(tmp_path, fixture) as (server, conn):
+        def lookup(binding, layout='0000040c'):
+            code, body, _ = http(server,conn,'POST','key-action',json.dumps({'layout':layout,'binding':binding}))
+            assert code == 200
+            return json.loads(body)
+        assert lookup('a')['text'] == 'Yaw left'
+        assert lookup({'code':'KeyJ','modifiers':[]})['text'] == 'Fire machine gun'
+        assert lookup('ControlLeft')['text'] == 'Decelerate'
+        assert lookup('F24')['status'] == 'unknown'
+        assert lookup('z')['status'] == 'unsupported'
+        assert lookup('a', '00000409')['status'] == 'unsupported'

@@ -25,11 +25,15 @@ def defaults(mode):
         raise ValueError('Choose a supported mode.')
     xbox = ['A', 'B', 'X', 'Y', '', 'L3+R3', 'R3', 'BACK', 'A', 'START',
             'UP', 'DOWN', 'LEFT', 'RIGHT', 'LB+RB', 'Y']
-    keyboard = ['Space', 'e', 'Tab', 't', '', 'c', 'v', 'r', 'Enter', 'Escape',
-                'F1', 'F2', 'F3', 'F4', 'a', 'f']
+    keyboard = [{'code': code, 'modifiers': []} if code else '' for code in (
+                'KeyJ', 'KeyL', 'KeyK', 'KeyT', '', 'KeyX', 'KeyV', 'KeyM', 'KeyJ', '',
+                'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '', 'KeyT')]
     values = keyboard if mode == 'keyboard' else xbox
-    return {'version': 1, 'layout': None, 'buttons': dict(zip(CONTROLS, values + [values[1], values[5]] + [''] * 14)),
-            'keys': dict(zip(KEYS, ('ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'q', 'd',
+    return {'version': 1, 'layout': None, 'buttons': {key: deepcopy(value) for key, value in zip(CONTROLS, values + [values[1], values[5]] + [''] * 14)},
+            'keys': dict(zip(KEYS, ({'code': code, 'modifiers': []} for code in (
+                                    'KeyA', 'KeyD', 'KeyW', 'KeyS', 'KeyQ', 'KeyE',
+                                    'Numpad8', 'Numpad2', 'Numpad4', 'Numpad6', 'Space', 'ControlLeft')))) if mode == 'keyboard' else
+                    dict(zip(KEYS, ('ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'q', 'd',
                                     'Numpad8', 'Numpad2', 'Numpad4', 'Numpad6', 'w', 's'))),
             'axes': {'roll': 0, 'pitch': 1, 'yaw': 3, 'throttle': 2 if mode == 'target-xbox' else 0},
             'invert': {'roll': False, 'pitch': True, 'yaw': False, 'throttle': True, 'camera': False},
@@ -37,13 +41,13 @@ def defaults(mode):
             'camera_strength': 1.0, 'high_g_button': 5, 'poll_hz': 125}
 
 
-def validate(mode, cfg):
+def validate(mode, cfg, *, allow_unconfigured=False):
     base = defaults(mode)
     if not isinstance(cfg, dict) or set(cfg) != set(base) or type(cfg['version']) is not int or cfg['version'] != 1:
         raise ValueError('Unsupported profile fields or version.')
     if mode == 'keyboard':
         layout = cfg['layout']
-        if not isinstance(layout, str) or len(layout) != 8 or any(c not in '0123456789abcdef' for c in layout):
+        if not (allow_unconfigured and layout is None) and (not isinstance(layout, str) or len(layout) != 8 or any(c not in '0123456789abcdef' for c in layout)):
             raise ConfigurationError('Choose an installed keyboard layout.', 'layout')
     elif cfg['layout'] is not None:
         raise ConfigurationError('Xbox profiles do not use a keyboard layout.', 'layout')
@@ -96,8 +100,7 @@ class Store:
             if not isinstance(data['profiles'], dict):
                 raise ValueError('Local profiles are invalid.')
             for mode, profile in data['profiles'].items():
-                if profile != defaults(mode):
-                    validate(mode, profile)
+                validate(mode, profile, allow_unconfigured=True)
             if set(data['profiles']) != set(MODES) or not isinstance(data['target_path'], str):
                 raise ValueError('Local settings are incomplete.')
             state = data

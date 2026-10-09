@@ -8,6 +8,12 @@ const test = base.extend({editor: async({page}, use) => {
   const root = await mkdtemp(join(tmpdir(), 'tca-e2e-'));
   const fixture = join(root, 'fixture.json');
   const data = {layouts: [{id:'00000409',label:'QWERTY · English'}, {id:'0000040c',label:'AZERTY · French'}, {id:'00000407',label:'QWERTZ · German'}], suggested:'0000040c', ready:false};
+  const swaps={'00000409':{},'0000040c':{A:'Q',Q:'A',W:'Z',Z:'W'},'00000407':{Y:'Z',Z:'Y'}};
+  data.key_translations=Object.fromEntries(data.layouts.map(({id})=>[id,Object.fromEntries(
+    [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'].map(character=>[character,{
+      code:/[0-9]/.test(character)?'Digit'+character:'Key'+(swaps[id][character.toUpperCase()]||character.toUpperCase()),
+      modifiers:(/[A-Z]/.test(character)||(id==='0000040c'&&/[0-9]/.test(character)))?['shift']:[]
+    }]))]));
   await writeFile(fixture, JSON.stringify(data));
   const python = process.env.TCA_TEST_PYTHON || '.local/dev-venv/Scripts/python.exe';
   const child = spawn(python, ['-B', '-m', 'app', 'configure', '--root', root, '--test-fixture', fixture, '--no-browser'], {cwd:process.cwd(), windowsHide:true});
@@ -50,6 +56,12 @@ test('physical presses select the matching device while binding edits and held s
   const update=async(stick=[],quadrant=[],available=true)=>{
     editor.data.input={available,message:'Disconnected.',state:{stick:{axes:[0,0,0,0,0,0],buttons:stick,hat:[0,0]},quadrant:{axes:[0,0,0,0,0,0],buttons:quadrant,hat:[0,0]}}};
     await writeFile(editor.fixture+'.tmp',JSON.stringify(editor.data));await rename(editor.fixture+'.tmp',editor.fixture);
+    // A transient fixture read failure also clears highlights. Wait for the
+    // requested successful snapshot so it cannot stand in for a release.
+    await expect.poll(()=>page.evaluate(()=>({
+      status:document.querySelector('#input-status').textContent,
+      buttons:[...new Set([...document.querySelectorAll('[data-control].live')].map(button=>button.dataset.control))].sort()
+    }))).toEqual({status:available?'Live input · move a lever or press a button.':'Disconnected.',buttons:available?[...stick.map(button=>'s'+button),...quadrant.map(button=>'q'+button)].sort():[]});
   };
   await update();await expect(page.locator('#input-status')).toContainText('Live input');
   await page.locator('#mode').focus();await update([],[1]);
@@ -310,7 +322,7 @@ test('both binding editors remain usable at a 200% zoom-equivalent viewport',asy
 test('Xbox dropdown combinations, triggers and removal save without changing profile format',async({page,editor})=>{
   await page.getByLabel('Preferred mode').selectOption('xbox');
   await expect(page.locator('#keyboard-binding')).toBeHidden();
-  await expect(page.locator('#xbox-output-0 option[value="LT"]')).toHaveText('LT (Default unverified)');
+  await expect(page.locator('#xbox-output-0 option[value="LT"]')).toHaveText('LT (Decelerate)');
   await setXbox(page,'LT+RT+A');
   await expect(page.locator('#xbox-output-2 option[value="LT"]')).toBeDisabled();
   await page.getByRole('button',{name:'Add button',exact:true}).click();
@@ -331,7 +343,7 @@ test('keyboard capture accepts standalone modifiers and extended keys with hones
   await expect(page.getByLabel('Default AC8 PC action')).toHaveAttribute('readonly','');
   await expect(page.getByLabel('Default AC8 PC action')).toHaveValue('Choose a keyboard layout to identify this key.');
   await page.getByLabel('Layout used in the game').selectOption('00000409');
-  await expect(page.getByLabel('Default AC8 PC action')).toHaveValue('Default not verified; set this action manually in game.');
+  await expect(page.getByLabel('Default AC8 PC action')).toHaveValue('Fire machine gun');
   for(const key of ['ControlLeft','ShiftRight','AltLeft','PrintScreen','F13','F24']) {
     await page.getByRole('button',{name:'Capture key',exact:true}).click();
     if (key==='F13' || key==='F24') await page.locator('#binding').dispatchEvent('keydown',{key,code:key});
@@ -353,5 +365,51 @@ test('keyboard capture accepts standalone modifiers and extended keys with hones
   await expect(page.getByLabel('Default AC8 PC action')).toHaveValue('Unassigned.');
   await page.setViewportSize({width:320,height:800});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  expect(editor.external).toEqual([]);
+});
+
+test('supplied actions follow physical QWERTY positions on AZERTY and distinguish number keys',async({page,editor})=>{
+  await page.getByLabel('Preferred mode').selectOption('keyboard');
+  await expect(page.locator('#binding-help')).toContainText('physical US QWERTY');
+  await page.getByLabel('Layout used in the game').selectOption('0000040c');
+  await page.locator('#control').selectOption('keys:yaw_left');
+  await expect(page.locator('#binding')).toHaveValue('KeyQ');
+  await expect(page.locator('#key-action')).toHaveValue('Yaw left');
+  await page.locator('#binding').fill('a');await expect(page.locator('#key-action')).toHaveValue('Yaw left');
+  await page.locator('#binding').fill('q');await expect(page.locator('#key-action')).toHaveValue('Turn left / Roll left');
+  for(const [key,action] of [['Digit7','Camera up'],['Numpad8','Camera up'],['Digit8','Camera down'],['ControlLeft','Decelerate']]) {
+    await page.getByRole('button',{name:'Capture key',exact:true}).click();await page.locator('#binding').press(key);
+    await expect(page.locator('#key-action')).toHaveValue(action);
+  }
+  await page.locator('#binding').fill('7');
+  await expect(page.locator('#key-action')).toHaveValue('No default action listed; set this action manually in game.');
+  await page.locator('#binding').fill('F24');
+  await expect(page.locator('#key-action')).toHaveValue('No default action listed; set this action manually in game.');
+  await page.setViewportSize({width:390,height:844});await page.screenshot({path:'test-results/ac8-keyboard-narrow.png',fullPage:true});
+  expect(editor.external).toEqual([]);
+});
+
+test('legacy unconfigured profiles stay unchanged until an explicit reset and save',async({page,editor})=>{
+  const profiles=JSON.parse(await readFile('tests/fixtures/profiles.json','utf8'));
+  const saved={version:1,preferred_mode:'xbox',target_path:'',profiles};
+  const path=join(editor.root,'.local/config.json'),raw=JSON.stringify(saved);
+  await mkdir(join(editor.root,'.local'),{recursive:true});await writeFile(path,raw);
+  await page.reload();await page.getByLabel('Preferred mode').selectOption('keyboard');
+  await expect(page.locator('#binding')).toHaveValue('Space');
+  expect(await readFile(path,'utf8')).toBe(raw);
+  page.once('dialog',dialog=>dialog.accept());await page.getByRole('button',{name:'Reset this mode',exact:true}).click();
+  await expect(page.locator('#binding')).toHaveValue('KeyJ');
+  await page.getByLabel('Layout used in the game').selectOption('0000040c');
+  await expect(page.locator('#key-action')).toHaveValue('Fire machine gun');
+  await page.locator('#control').selectOption('keys:brake');await expect(page.locator('#binding')).toHaveValue('ControlLeft');
+  await expect(page.locator('#key-action')).toHaveValue('Decelerate');
+  await page.locator('#control').selectOption('buttons:s10');await expect(page.locator('#binding')).toHaveValue('');
+  await page.locator('#control').selectOption('buttons:s15');await expect(page.locator('#binding')).toHaveValue('');
+  expect(await readFile(path,'utf8')).toBe(raw);
+  await page.getByRole('button',{name:'Save configuration'}).click();await expect(page.locator('#message')).toContainText('Saved.');
+  const updated=JSON.parse(await readFile(path,'utf8'));
+  expect(updated.profiles.keyboard.keys.yaw_left).toEqual({code:'KeyQ',modifiers:[]});
+  expect(updated.profiles.xbox).toEqual(profiles.xbox);
+  expect(await readFile(join(editor.root,'.local/config.previous.json'),'utf8')).toBe(raw);
   expect(editor.external).toEqual([]);
 });
