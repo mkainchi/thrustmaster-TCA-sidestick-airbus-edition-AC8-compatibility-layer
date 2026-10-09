@@ -17,10 +17,10 @@
 <section id="layout-section" hidden aria-labelledby="layout-heading"><h2 id="layout-heading">Keyboard layout</h2>
 <label for="layout">Layout used in the game · required</label><select id="layout" aria-describedby="layout-help layout-error"><option value="">Choose an installed layout</option></select>
 <p id="layout-help"></p><p id="layout-error" class="field-error"></p><button id="use-layout" type="button">Use suggested Windows layout</button></section>
-<section aria-labelledby="mapping-heading"><h2 id="mapping-heading">Hardware mappings</h2><p>Stick movement controls flight. The POV controls the camera. Select a control or a number on its diagram to edit its binding.</p>
+<section aria-labelledby="mapping-heading"><h2 id="mapping-heading">Hardware mappings</h2><p>Stick movement controls flight. The POV controls the camera. Press a hardware button, select a control or click a number on its diagram to edit its binding. Automatic selection pauses while editing, capturing a key or saving.</p>
 <details id="overview"><summary>Mapping overview · all controls</summary><p class="help">Review each output, or select a control to edit it. High-G overrides throttle input while held; an assigned button binding also remains active.</p><div class="overview-groups" id="mapping-overview"></div></details>
 <div class="mapping-workspace"><div class="mapping-editor">
-<label for="control">Physical control or action</label><select id="control"></select>
+<label for="control">Physical control or action</label><select id="control" aria-describedby="control-status"></select><p id="control-status" class="help" role="status" aria-live="polite"></p>
 <label id="binding-label" for="binding">Output binding</label><input id="binding" type="text" maxlength="128" aria-describedby="binding-help binding-error special-binding"><p id="binding-help"></p><p id="binding-error" class="field-error"></p><p id="special-binding" class="help"></p><button id="capture" type="button">Capture key</button>
 <div class="save-area"><button id="save" type="button" disabled>Save configuration</button><p id="message" role="status" aria-live="polite">Choose your mode to begin.</p>
 <div class="secondary-actions"><button id="revert" type="button" disabled>Revert to saved</button><button id="reset" type="button">Reset this mode</button></div></div></div>
@@ -39,7 +39,7 @@
 <details><summary>Full quadrant diagram</summary><img class="full-photo" src="device/quadrant.svg" alt="Measured SVG full top view of the TCA Quadrant Airbus Edition" width="1920" height="1080"></details>
 <a href="https://support.thrustmaster.com/en/product/tca-quadrant-airbus-edition-en/" target="_blank" rel="noopener noreferrer">Official quadrant reference and manual</a></div></details>
 </div>
-<details id="calibration"><summary>Axes and calibration · optional</summary><p>Keep these values unless your flight, camera or throttle input needs adjustment.</p>
+<details id="calibration"><summary>Axes and calibration · optional</summary><p>Keep these values unless your flight, camera or throttle input needs adjustment. The sidestick slider and quadrant's left lever share throttle direction and center deadzone. Moving either throttle beyond 1% of full travel transfers control to it; the idle throttle is ignored. The sidestick slider uses Z; the throttle axis selector below applies to the quadrant, or Combined Z in TARGET → Xbox.</p>
 <fieldset><legend>Input axes</legend><p class="help">Roll is left/right flight movement; pitch is up/down; yaw is twist. X/Y/Z/R/U/V are Windows axes. Match each to the live input on your devices.</p><div id="axis-fields" class="setting-grid"></div></fieldset>
 <fieldset><legend>Direction</legend><p class="help">Invert an input when it moves in the opposite direction to your game's binding.</p><div id="invert-fields"></div></fieldset>
 <fieldset><legend>Flight and throttle response</legend><div class="setting-grid">

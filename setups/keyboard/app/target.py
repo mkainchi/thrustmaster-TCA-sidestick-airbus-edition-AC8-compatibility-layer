@@ -56,7 +56,7 @@ def generate(mode, cfg, local, nonce, resolver=None, copilot=False):
         text = text.replace('0,41,59,100', f'0,{50-yd},{50+yd},100')
         mapped_axes = {old: AXES[cfg['axes'][semantic]] for semantic, old in (('roll', 'JOYX'), ('pitch', 'JOYY'), ('yaw', 'RUDDER'))}
         text = re.sub(r'KeyAxis\(&A320Pilot, (JOYX|JOYY|RUDDER)', lambda match: 'KeyAxis(&A320Pilot, ' + mapped_axes[match[1]], text)
-        text = text.replace('(x == QT_LEFT)', f'(x == {AXES[cfg["axes"]["throttle"]]})')
+        text = text.replace('QT_LEFT', AXES[cfg['axes']['throttle']])
         if cfg['invert']['roll']:
             text = text.replace('FLIGHT_ROLL_LEFT,0,FLIGHT_ROLL_RIGHT', 'FLIGHT_ROLL_RIGHT,0,FLIGHT_ROLL_LEFT')
         if cfg['invert']['yaw']:
@@ -67,6 +67,7 @@ def generate(mode, cfg, local, nonce, resolver=None, copilot=False):
         text = text.replace('ButtonsNumber = 18', 'ButtonsNumber = 32').replace('ButtonsNumber != 18', 'ButtonsNumber != 32')
         text = text.replace('    MapKey(&TCAQuadrant12, QT_BTN1, DX17);\n    MapKey(&TCAQuadrant12, QT_BTN2, DX18);',
                             '    i = 0;\n    while(i < 16) { MapKey(&TCAQuadrant12, i, DX17+i); i=i+1; }')
+    text = text.replace('include "throttle.tmh"', (TEMPLATES / 'throttle.tmh').read_text(encoding='utf-8'))
     if copilot:
         text = text.replace('Configure(&A320Copilot, MODE_EXCLUDED);', 'Configure(&EXCLUDEDSTICK, MODE_EXCLUDED);')
         text = text.replace('A320Pilot', 'A320Copilot').replace('EXCLUDEDSTICK', 'A320Pilot')

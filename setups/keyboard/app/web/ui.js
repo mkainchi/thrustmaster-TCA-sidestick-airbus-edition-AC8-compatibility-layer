@@ -5,6 +5,7 @@ export async function start(doc, win, fetcher) {
   const base = win.location.pathname;
   const api = (route, data) => request(fetcher, base, route, data);
   let state, mode, profile, dirty = false, busy = false, armed = false;
+  let pressed = null, polling = false, inputGeneration = 0, closed = false;
   const numeric = ['deadzone', 'throttle_deadzone', 'yaw_threshold', 'camera_strength', 'high_g_button', 'poll_hz'];
   const keyboard = () => mode === 'keyboard';
   const descriptions = {
@@ -73,6 +74,7 @@ export async function start(doc, win, fetcher) {
     refreshOverview();
   }
   function selection() {
+    $('control-status').textContent = '';
     const selected = $('control').value;
     const [group, key] = selected.split(':');
     clearError('binding');
@@ -163,25 +165,42 @@ export async function start(doc, win, fetcher) {
     const next = $('mode').value;
     if (dirty && !win.confirm('Discard unsaved changes in this mode?')) { $('mode').value = mode; return; }
     mode = next; dirty = false;
+    inputGeneration++; clearInput();
     if (mode) profile = structuredClone(state.saved.profiles[mode]);
     render();
     if (mode) { await recheck(); message(state.active ? 'Stop emulation before saving changes.' : 'Review mappings, then save this mode.'); }
     else $('mode-description').textContent = 'Choose the output your game accepts. Your mappings stay on this computer.';
   }
   async function poll() {
-    if (!mode) return;
+    if (!mode || polling || closed) return;
+    polling = true;
+    const generation = inputGeneration;
     try {
       const data = await api('input');
+      if (closed || generation !== inputGeneration) return;
       if (!data.available) { clearInput(); $('input-status').textContent = data.message; return; }
       $('input-status').textContent = 'Live input · move a lever or press a button.';
       for (const element of doc.querySelectorAll('[data-control]')) {
         const key = element.dataset.control, device = key[0] === 's' ? 'stick' : 'quadrant';
         element.classList.toggle('live', data.state[device].buttons.includes(Number(key.slice(1))));
       }
+      const down = new Set(['s', 'q'].flatMap(prefix => data.state[prefix === 's' ? 'stick' : 'quadrant'].buttons.map(number => prefix + number)).filter(key => Object.hasOwn(profile.buttons, key)));
+      const fresh = pressed === null ? [] : [...down].filter(key => !pressed.has(key));
+      pressed = down;
+      if (fresh.length && !busy && !armed && !doc.activeElement.matches('input, select:not(#mode), textarea')) {
+        const preferred = $('quadrant-photo').hidden ? 's' : 'q';
+        fresh.sort((a, b) => Number(b.startsWith(preferred)) - Number(a.startsWith(preferred)) || Number(a.slice(1)) - Number(b.slice(1)));
+        $('control').value = 'buttons:' + fresh[0]; selection();
+        $('control-status').textContent = controlName('buttons', fresh[0]) + ' selected from live input.';
+      }
       $('axis-preview').textContent = 'Stick: ' + data.state.stick.axes.map(v => v.toFixed(2)).join(' / ') + ' · Throttle: ' + data.state.quadrant.axes.map(v => v.toFixed(2)).join(' / ');
-    } catch { clearInput(); $('input-status').textContent = 'Live input unavailable. Reconnect devices or reopen configure.cmd.'; }
+    } catch {
+      if (!closed && generation === inputGeneration) { clearInput(); $('input-status').textContent = 'Live input unavailable. Reconnect devices or reopen configure.cmd.'; }
+    } finally { polling = false; }
   }
   function clearInput() {
+    pressed = null;
+    $('control-status').textContent = '';
     for (const element of doc.querySelectorAll('.control.live')) element.classList.remove('live');
     $('axis-preview').textContent = '';
   }
@@ -271,6 +290,6 @@ export async function start(doc, win, fetcher) {
   } catch { $('load-error').textContent = 'Cannot load configuration. Reopen configure.cmd to restart the local editor.'; return null; }
   const unload = event => { if (dirty) { event.preventDefault(); event.returnValue = ''; } };
   win.addEventListener('beforeunload', unload);
-  const timer = win.setInterval(poll, 400);
-  return {close() { win.clearInterval(timer); win.removeEventListener('beforeunload', unload); }, poll};
+  const timer = win.setInterval(poll, 50);
+  return {close() { closed = true; win.clearInterval(timer); win.removeEventListener('beforeunload', unload); }, poll};
 }

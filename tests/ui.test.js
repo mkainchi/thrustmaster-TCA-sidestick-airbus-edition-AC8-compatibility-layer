@@ -21,14 +21,16 @@ async function mount(mode=null, suggestion='00000409', active=false) {
   document.documentElement.innerHTML=readFileSync('app/web/index.html','utf8');
   const state={saved:{preferred_mode:mode,target_path:'',profiles:structuredClone(profiles)},defaults:structuredClone(profiles),
     layouts:[{id:'00000409',label:'QWERTY'}],suggested:suggestion,active};
-  const result={state,dependencies:[],input:{available:false,message:'Disconnected.'},failure:null,saves:[]};
+  const result={state,dependencies:[],input:{available:false,message:'Disconnected.'},failure:null,saves:[],inputReads:0};
   const fetcher=async(url,options)=>{
     const route=url.split('/').pop();
     if(result.failure===route)throw Error('server unavailable');
-    if(route==='save'){result.saves.push(JSON.parse(options.body));return{ok:result.saveError===undefined,json:async()=>({message:result.saveError||'Saved locally.',field:result.errorField})};}
+    if(route==='input'){result.inputReads++;await result.inputWait;}
+    if(route==='save'){result.saves.push(JSON.parse(options.body));await result.saveWait;return{ok:result.saveError===undefined,json:async()=>({message:result.saveError||'Saved locally.',field:result.errorField})};}
     return{ok:true,json:async()=>route==='state'?state:route==='dependencies'?result.dependencies:result.input};
   };
   vi.spyOn(window,'confirm').mockReturnValue(true);
+  vi.spyOn(window,'setInterval').mockReturnValue(0);
   result.handle=await start(document,window,fetcher);handles.push(result.handle);
   result.$=id=>document.getElementById(id);
   result.mode=async next=>{result.$('mode').value=next;await result.$('mode').onchange();};
@@ -66,6 +68,88 @@ it('maps the selected physical control, calibrates input and retains a failed sa
   t.$('reset').onclick();expect(t.$('binding').value).toBe('A+RB');
   window.confirm.mockReturnValue(true);t.$('reset').onclick();expect(t.$('binding').value).toBe('A');
   await t.mode('');expect(t.$('workspace').hidden).toBe(true);await t.handle.poll();
+});
+
+async function press(t, stick=[], quadrant=[]) {
+  t.input={available:true,state:{stick:{axes:[0,0,0,0,0,0],buttons:stick,hat:[0,0]},quadrant:{axes:[0,0,0,0,0,0],buttons:quadrant,hat:[0,0]}}};
+  await t.handle.poll();
+}
+
+it('selects new hardware presses and the matching diagram without discarding edits or moving focus',async()=>{
+  const t=await mount('xbox');
+  t.$('mode').focus();
+  t.$('binding').value='RB';t.$('binding').oninput();
+  await press(t,[3],[7]); // Initial held switches are a baseline.
+  expect(t.$('control').value).toBe('buttons:s1');
+  await press(t);await press(t,[],[2]);
+  expect(t.$('control').value).toBe('buttons:q2');
+  expect(t.$('show-quadrant').getAttribute('aria-pressed')).toBe('true');
+  expect(t.$('stick-photo').hidden).toBe(true);
+  expect(document.querySelector('[data-control="q2"]').getAttribute('aria-pressed')).toBe('true');
+  expect(t.$('control-status').textContent).toContain('Quadrant 2');
+  expect(document.activeElement).not.toBe(t.$('binding'));
+  expect(t.$('message').textContent).toContain('Unsaved');
+  await press(t,[],[2,9,16]);
+  expect(t.$('control').value).toBe('buttons:q9');
+  await press(t,[1,4,17],[3,16]);
+  expect(t.$('control').value).toBe('buttons:q3');
+  await press(t,[17],[]);expect(t.$('control').value).toBe('buttons:q3');
+  await press(t,[17,11],[]);expect(t.$('control').value).toBe('buttons:s11');
+  await press(t,[11],[]);expect(t.$('control').value).toBe('buttons:s11');
+  t.$('control').value='buttons:s1';t.$('control').onchange();
+  expect(t.$('binding').value).toBe('RB');
+  expect(t.$('control-status').textContent).toBe('');
+  t.$('control').value='keys:roll_left';await t.mode('keyboard');
+  t.$('control').value='keys:roll_left';t.$('control').onchange();
+  await press(t);await press(t,[4],[]);expect(t.$('control').value).toBe('buttons:s4');
+});
+
+it('consumes presses while editing or capturing and resumes only on a new press',async()=>{
+  const t=await mount('keyboard');await press(t);
+  t.$('binding').focus();t.$('binding').value='Space';t.$('binding').oninput();
+  await press(t,[],[2]);expect(t.$('control').value).toBe('buttons:s1');
+  expect(t.$('binding').value).toBe('Space');expect(document.activeElement).toBe(t.$('binding'));
+  t.$('binding').blur();await press(t,[],[2]);expect(t.$('control').value).toBe('buttons:s1');
+  t.$('capture').onclick();await press(t,[3],[]);
+  expect(t.$('control').value).toBe('buttons:s1');expect(t.$('capture').textContent).toBe('Press key…');
+  t.$('binding').blur();await press(t);await press(t,[3],[]);
+  expect(t.$('control').value).toBe('buttons:s3');
+  t.$('layout').focus();await press(t,[],[1]);expect(t.$('control').value).toBe('buttons:s3');
+  t.$('layout').blur();await press(t);await press(t,[],[1]);expect(t.$('control').value).toBe('buttons:q1');
+  t.input={available:false,message:'Disconnected.'};await t.handle.poll();
+  await press(t,[4]);expect(t.$('control').value).toBe('buttons:q1');
+  await press(t);await press(t,[4]);expect(t.$('control').value).toBe('buttons:s4');
+  await t.mode('xbox');await press(t,[5]);expect(t.$('control').value).toBe('buttons:s1');
+  await press(t);await press(t,[5]);expect(t.$('control').value).toBe('buttons:s5');
+});
+
+it('serializes input requests, ignores stale mode responses and tracks presses during save',async()=>{
+  const t=await mount('xbox');await press(t);
+  let release;t.inputWait=new Promise(resolve=>{release=resolve;});
+  t.input.state.quadrant.buttons=[2];const pending=t.handle.poll();
+  const duplicate=t.handle.poll();
+  await t.mode('keyboard');release();await Promise.all([pending,duplicate]);
+  expect(t.inputReads).toBe(2);
+  expect(t.$('control').value).toBe('buttons:s1');
+  t.inputWait=null;await press(t);t.$('use-layout').click();
+  let saved;t.saveWait=new Promise(resolve=>{saved=resolve;});
+  const saving=t.$('save').onclick();await press(t,[],[3]);
+  expect(t.$('control').value).toBe('buttons:s1');saved();await saving;
+  await press(t,[],[3]);expect(t.$('control').value).toBe('buttons:s1');
+  await press(t);await press(t,[],[3]);expect(t.$('control').value).toBe('buttons:q3');
+  t.inputWait=new Promise(resolve=>{release=resolve;});const closing=t.handle.poll();
+  t.handle.close();release();await closing;
+  expect(t.$('control').value).toBe('buttons:q3');
+});
+
+it('ignores failed input requests from an earlier mode or a closed editor',async()=>{
+  const t=await mount('xbox');let reject;
+  t.inputWait=new Promise((resolve,fail)=>{reject=fail;});const old=t.handle.poll();
+  await t.mode('keyboard');reject(Error('old mode'));await old;
+  expect(t.$('input-status').textContent).not.toContain('unavailable');
+  t.inputWait=new Promise((resolve,fail)=>{reject=fail;});const closing=t.handle.poll();
+  t.handle.close();reject(Error('closed'));await closing;
+  expect(t.$('input-status').textContent).not.toContain('unavailable');
 });
 
 it('requires a layout, captures a chord and handles unsupported key events',async()=>{

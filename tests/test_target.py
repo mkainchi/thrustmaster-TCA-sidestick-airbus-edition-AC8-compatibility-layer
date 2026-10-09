@@ -3,6 +3,9 @@ from app.model import defaults
 from app.target import generate
 from app import target as t
 import pytest
+import shutil
+import subprocess
+from app.dependencies import target_candidates, target_installation
 
 
 def test_keyboard_generation_uses_confirmed_layout_and_private_readiness(tmp_path):
@@ -44,3 +47,27 @@ def test_script_validation_modifiers_inversions_copilot_and_template_mismatch(tm
     raw=(t.TEMPLATES/'keyboard.tmc').read_text().replace('define KEYBOARD_CONFIGURED 0','define REMOVED 0')
     (tmp_path/'keyboard.tmc').write_text(raw);monkeypatch.setattr(t,'TEMPLATES',tmp_path)
     with pytest.raises(ValueError,match='template'):generate('keyboard',cfg,tmp_path,'valid',lambda b,l:(1004,[]))
+
+
+@pytest.mark.parametrize('mode', ['keyboard', 'target-xbox'])
+@pytest.mark.parametrize('copilot', [False, True])
+@pytest.mark.parametrize('inverted', [False, True])
+def test_installed_target_compiles_and_replays_shared_throttle_without_device_capture(mode, copilot, inverted):
+    folder = next((p for p in target_candidates() if target_installation(p) and (p / 'Interpreter.exe').is_file()), None)
+    if folder is None:
+        pytest.skip('Official TARGET Interpreter is not installed; synthetic checks do not prove physical input.')
+    local = Path.cwd() / '.local' / 'target-validation' / f'{mode}-{int(copilot)}-{int(inverted)}'
+    local.mkdir(parents=True, exist_ok=True)
+    for name in ('target.tmh', 'defines.tmh', 'sys.tmh', 'hid.tmh'):
+        shutil.copyfile(folder / 'scripts' / name, local / name)
+    cfg = defaults(mode)
+    cfg['invert']['throttle'] = inverted
+    cfg['throttle_deadzone'] = .1
+    if mode == 'keyboard':
+        cfg['layout'] = '00000409'
+        cfg['axes']['throttle'] = 1
+    script = generate(mode, cfg, local, 'validation', lambda b, l: (1004, []), copilot)
+    (local / 'profile.tmc').write_text(script, encoding='utf-8')
+    result = subprocess.run([str(folder / 'Interpreter.exe'), 'profile.tmc', 'ValidateProfile'], cwd=local, capture_output=True, timeout=20)
+    output = (result.stdout + result.stderr).decode(errors='replace')
+    assert 'ValidateProfile returned 0.' in output, output

@@ -8,7 +8,7 @@ import sys
 import time
 from .dependencies import status, target_installation
 from .keyboard import WindowsLayouts
-from .model import Store, validate, report
+from .model import Store, validate, report, ThrottleSelector
 from .target import generate
 from .windows import Joysticks, Pad, xinput, physical_present, controller_guard
 
@@ -107,7 +107,9 @@ def owned_run(root, seconds=None, inputs=None, pad_factory=Pad, detect=status, l
                 wait_for(combined_ready, 'TARGET Combined did not appear with 4 axes and 32 buttons. Stop the profile and recheck its descriptor.',
                          clock=clock, sleep=sleep)
             else:
-                inputs.snapshot(mode)
+                initial = inputs.snapshot(mode)
+                throttle_selector = ThrottleSelector()
+                throttle_selector.read(initial['stick']['axes'][2], initial['quadrant']['axes'][cfg['axes']['throttle']])
             before = set(read_xinput())
             if len(before) == 4:
                 raise RuntimeError('All four XInput slots are occupied. Disconnect an unused controller and retry.')
@@ -127,7 +129,9 @@ def owned_run(root, seconds=None, inputs=None, pad_factory=Pad, detect=status, l
                 if not ready.exists() or wallclock() - ready.stat().st_mtime > 2:
                     raise RuntimeError('TARGET stopped unexpectedly. Recheck the profile before restarting.')
             else:
-                pad.update(report(inputs.snapshot(mode), cfg))
+                snapshot = inputs.snapshot(mode)
+                throttle = throttle_selector.read(snapshot['stick']['axes'][2], snapshot['quadrant']['axes'][cfg['axes']['throttle']]) if mode == 'xbox' else None
+                pad.update(report(snapshot, cfg, throttle=throttle))
             sleep(1 / cfg['poll_hz'])
     finally:
         failed = sys.exc_info()[0] is not None

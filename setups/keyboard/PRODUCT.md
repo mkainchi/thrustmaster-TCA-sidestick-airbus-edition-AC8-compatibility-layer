@@ -16,6 +16,8 @@ One offline page and two command entry points provide keyboard output through TA
 
 Users must be able to identify controls, save independent mode profiles, resolve prerequisites, and start and stop a verified session.
 
+Physical button presses select the matching device and binding while the editor is idle. The sidestick slider and quadrant's left lever share acceleration/braking; the last throttle moved beyond a small noise threshold takes control.
+
 ## Operating Context
 
 Configuration runs on loopback; TARGET and system drivers are installed separately. Stick motion controls flight; the POV controls the camera. Editable ACE COMBAT examples must match the game's bindings.

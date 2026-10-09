@@ -14,7 +14,7 @@ Run every command in [Develop and verify](../README.md#develop-and-verify).
 | Playwright | Real local server, isolated settings, synthetic controller/dependency data and shipped SVG assets |
 | Release and Windows CI | Coverage, browser, naming, privacy and license gates before allowlisted packaging |
 
-Unit boundaries exercise Windows APIs, profiles, translation, migration, atomic saves, dependencies, session ownership, startup, disconnects and cleanup failures. Browser scenarios check mode/layout consent, independent mappings, capture, optional calibration, overlays/overview, unsaved edits, save/load/dependency recovery, request protections, contrast, focus and reflow.
+Unit boundaries exercise Windows APIs, profiles, translation, migration, atomic saves, dependencies, session ownership, throttle takeover/noise/High-G, startup, disconnects and cleanup failures. Browser scenarios check mode/layout consent, independent mappings, capture, physical-button selection, editing/held-switch protections, optional calibration, overlays/overview, unsaved edits, save/load/dependency recovery, request protections, contrast, focus and reflow.
 
 Synthetic input and rendered diagrams do not prove hardware behavior. Development skills, private reports and browser binaries are excluded from releases.
 
@@ -44,6 +44,7 @@ These results describe checks already performed. They do not replace a fresh har
 | Official CPython archive SHA-256 and retained-file equality | Passed | The local `_pth` file is intentionally authored; every retained upstream binary/stdlib/notice is unchanged. |
 | ViGEmClient DLL equality with pinned vgamepad source archive | Passed | Pins the exact binary origin rather than guessing its internal build version. |
 | Installed TARGET Interpreter offline `ValidateProfile` for generated keyboard and Combined templates | Passed | Runs pure validation, without Init, hardware capture or output. Official headers were used only in ignored temporary compilation storage. |
+| Shared throttle ownership and keyboard state replay in installed TARGET Interpreter | Passed | Generated Pilot/Copilot keyboard and Combined profiles compile and pass pure replay; no directed physical input or game output is proven. |
 | Native WinMM input from both supported physical devices | Passed | Presence/neutral state read; no directed button/axis motion test was performed. |
 | Actual ViGEmBus virtual Xbox allocation, neutral report, XInput visibility and removal | Passed | Driver/output lifecycle check; not a game or movement check. |
 | Actual TARGET GUI `-r`, fresh readiness, Combined descriptor and cooperative stop | Incomplete | An initial profile wrote readiness and acknowledged stop, but its descriptor was unavailable to the bridge. Later GUI runs exited without readiness. The application refused startup and retained actionable recovery state. Stop TARGET and reconnect both devices before retrying this check. |
@@ -61,18 +62,21 @@ Confirm a new Windows/XInput Xbox controller, then verify:
 
 - Stick movement changes the left stick while the right stays centered.
 - Twist changes yaw; POV changes only right stick/camera.
-- Left-lever movement changes acceleration/braking; neutral releases both.
-- High-G overrides throttle while held; release restores the lever's state.
+- Move the quadrant's left lever, then the sidestick slider: each must produce the same acceleration/braking direction and center neutral behavior.
+- Move the inactive throttle beyond 1% of full travel: it must take over immediately. Slow accumulated movement must also take over; minor jitter must not. The quadrant's right lever must have no throttle effect.
+- High-G overrides throttle while held; switch throttles while holding it, then verify release restores the most recently active throttle.
 
 ### 3. Check physical numbering
 
 Compare each physical control with its live diagram highlight, including switches/detents and assigned/unassigned wingman buttons. Record firmware differences privately; do not publish unique hardware IDs.
 
+Check normal button taps select the exact button and device. Keep a switch held while reconnecting: it must not change selection until a new press. Type a binding or capture a key while pressing hardware buttons; selection, focus and edits must stay stable until a subsequent new press after editing ends. Click both device tabs and numbered buttons to verify manual selection.
+
 ### 4. Check keyboard output
 
 Use a temporary text/key monitor. Explicitly select each layout used for play and check characters, physical capture and modifiers. Verify held/released flight, POV camera, throttle and High-G keys.
 
-Move the left lever once after READY to establish its initial keyboard zone.
+After READY, keyboard throttle output must remain neutral until either throttle moves meaningfully. Repeat handoff, neutral, jitter and High-G checks using a key monitor.
 
 ### 5. Check TARGET → Xbox and disconnect recovery
 

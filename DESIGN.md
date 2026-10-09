@@ -6,6 +6,7 @@ Use Impeccable's Operate mode: familiar controls and a direct path from mode cho
 
 - Show relevant prerequisites with nearby remedies.
 - Keep control selection, binding, inline error and Save together.
+- Synchronize live button presses, the native selector and diagram selection without moving focus or losing edits. Pause automatic selection while editing, capturing a key or saving, and resume on the next new press.
 - Offer an editable overview grouped by device and keyboard actions, with explicit High-G behavior.
 - Keep calibration optional.
 - Distinguish loading, unavailable input, unsaved changes, saving, success and failure. Associate errors with fields and summarize them in a live status region.

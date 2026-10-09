@@ -1,5 +1,5 @@
 import {test as base, expect} from '@playwright/test';
-import {mkdtemp, writeFile, readFile, rm, mkdir} from 'node:fs/promises';
+import {mkdtemp, writeFile, readFile, rm, mkdir, rename} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawn} from 'node:child_process';
@@ -42,6 +42,48 @@ test('all device diagrams render offline without private reference images',async
   await page.getByRole('button',{name:'Quadrant',exact:true}).click();
   await page.getByRole('button',{name:'Quadrant button 2',exact:true}).click();
   await expect(page.locator('#control')).toHaveValue('buttons:q2');
+  expect(editor.external).toEqual([]);
+});
+
+test('physical presses select the matching device while binding edits and held switches remain stable',async({page,editor})=>{
+  await page.getByLabel('Preferred mode').selectOption('xbox');
+  const update=async(stick=[],quadrant=[],available=true)=>{
+    editor.data.input={available,message:'Disconnected.',state:{stick:{axes:[0,0,0,0,0,0],buttons:stick,hat:[0,0]},quadrant:{axes:[0,0,0,0,0,0],buttons:quadrant,hat:[0,0]}}};
+    await writeFile(editor.fixture+'.tmp',JSON.stringify(editor.data));await rename(editor.fixture+'.tmp',editor.fixture);
+  };
+  await update();await expect(page.locator('#input-status')).toContainText('Live input');
+  await page.locator('#mode').focus();await update([],[1]);
+  await expect(page.locator('#control')).toHaveValue('buttons:q1');
+  await expect(page.locator('#mode')).toBeFocused();
+  await update();await expect(page.locator('[data-control="q1"]')).not.toHaveClass(/live/);
+  await page.getByRole('button',{name:'Sidestick',exact:true}).click();
+  await page.locator('#binding').fill('RB');await page.getByRole('heading',{name:'Hardware mappings'}).click();
+  await update([],[2]);await expect(page.locator('#control')).toHaveValue('buttons:q2');
+  await expect(page.locator('#show-quadrant')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('[data-control="q2"]')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#control-status')).toContainText('Quadrant 2');
+  await expect(page.locator('#binding')).not.toBeFocused();
+  const images=join(process.cwd(),'.local/button-selection');await mkdir(images,{recursive:true});
+  await page.screenshot({path:join(images,'desktop.png'),fullPage:true});
+  await page.locator('#binding').fill('X');await update([11],[2]);
+  await expect(page.locator('[data-control="s11"]')).toHaveClass(/live/);
+  await expect(page.locator('#control')).toHaveValue('buttons:q2');
+  await expect(page.locator('#binding')).toHaveValue('X');await expect(page.locator('#binding')).toBeFocused();
+  await page.getByRole('heading',{name:'Hardware mappings'}).click();
+  await expect(page.locator('#control')).toHaveValue('buttons:q2');
+  await update();await expect(page.locator('[data-control="s11"]')).not.toHaveClass(/live/);
+  await update([11]);await expect(page.locator('#control')).toHaveValue('buttons:s11');
+  await update([],[],false);await expect(page.locator('#input-status')).toHaveText('Disconnected.');
+  await update([3]);await expect(page.locator('[data-control="s3"]')).toHaveClass(/live/);
+  await expect(page.locator('#control')).toHaveValue('buttons:s11');
+  await update();await expect(page.locator('[data-control="s3"]')).not.toHaveClass(/live/);
+  await update([3]);await expect(page.locator('#control')).toHaveValue('buttons:s3');
+  await page.getByRole('button',{name:'Save configuration'}).click();
+  await expect(page.locator('#message')).toContainText('Saved.');
+  const cfg=JSON.parse(await readFile(join(editor.root,'.local/config.json'),'utf8'));
+  expect(cfg.profiles.xbox.buttons.s1).toBe('RB');expect(cfg.profiles.xbox.buttons.q2).toBe('X');
+  await page.setViewportSize({width:390,height:844});await page.screenshot({path:join(images,'narrow.png'),fullPage:true});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
   expect(editor.external).toEqual([]);
 });
 

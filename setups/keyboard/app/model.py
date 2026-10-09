@@ -125,13 +125,34 @@ def centered(value, deadzone):
     return math.copysign((abs(value) - deadzone) / (1 - deadzone), value)
 
 
-def report(state, cfg):
+class ThrottleSelector:
+    """Last meaningful movement wins; simultaneous samples keep ownership."""
+    def __init__(self):
+        self.previous = None
+        self.active = 1  # Quadrant preserves the existing startup position.
+
+    def read(self, stick, quadrant):
+        values = [stick, quadrant]
+        if self.previous is None:
+            self.previous = values.copy()
+        moved = []
+        for index, value in enumerate(values):
+            if abs(value - self.previous[index]) > .02:  # 1% of full [-1, 1] travel.
+                self.previous[index] = value
+                moved.append(index)
+        if len(moved) == 1:
+            self.active = moved[0]
+        return values[self.active]
+
+
+def report(state, cfg, *, throttle=None):
     stick, quadrant = state['stick'], state['quadrant']
     result = {}
     for name, output in (('roll', 'lx'), ('pitch', 'ly')):
         value = centered(stick['axes'][cfg['axes'][name]], cfg['deadzone'])
         result[output] = -value if cfg['invert'][name] else value
-    throttle = quadrant['axes'][cfg['axes']['throttle']]
+    if throttle is None:
+        throttle = quadrant['axes'][cfg['axes']['throttle']]
     throttle = centered(-throttle if cfg['invert']['throttle'] else throttle, cfg['throttle_deadzone'])
     result.update(lt=max(0, -throttle), rt=max(0, throttle), rx=stick['hat'][0] * cfg['camera_strength'],
                   ry=stick['hat'][1] * cfg['camera_strength'] * (-1 if cfg['invert']['camera'] else 1))

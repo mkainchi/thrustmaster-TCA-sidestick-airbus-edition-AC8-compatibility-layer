@@ -1,0 +1,40 @@
+// Original shared throttle arbitration; inlined into generated profiles.
+// Signed TARGET travel is -32767..32767; 656 counts exceed 1% of full travel.
+int throttlePrevious[2], throttleOwner, throttleMoved;
+
+int InitThrottle(int stick, int quadrant)
+{
+    throttlePrevious[0] = stick;
+    throttlePrevious[1] = quadrant;
+    throttleOwner = 1;
+    throttleMoved = 0;
+}
+
+int SelectThrottle(int source, int value)
+{
+    int delta = value - throttlePrevious[source];
+    if((delta > 655) | (delta < -655))
+    {
+        throttlePrevious[source] = value;
+        throttleOwner = source;
+        throttleMoved = 1;
+    }
+    return source == throttleOwner;
+}
+
+// Offline replay: no device initialization or output.
+int ValidateThrottle()
+{
+    InitThrottle(0,20000);
+    if(SelectThrottle(0,655)) return 1;
+    if(throttleMoved) return 2;
+    if(!SelectThrottle(0,656)) return 3;
+    if(!throttleMoved) return 4;
+    if(SelectThrottle(1,20010)) return 5;
+    if(!SelectThrottle(0,660)) return 6;
+    if(!SelectThrottle(1,21000)) return 7;
+    if(SelectThrottle(0,661)) return 8;
+    if(!SelectThrottle(0,-1000)) return 9;
+    InitThrottle(0,0);
+    return 0;
+}

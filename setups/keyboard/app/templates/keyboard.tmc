@@ -5,6 +5,7 @@
 // Digital steering: this profile does not provide analog/XInput emulation.
 // Official TARGET headers are supplied by your TARGET installation.
 include "target.tmh"
+include "throttle.tmh"
 
 // Set to 1 if forward throttle brakes instead of accelerating.
 define REVERSE_THROTTLE 0
@@ -44,6 +45,14 @@ define ACTION_FOCUS 0
 
 int throttleZone, highG, accelHeld, brakeHeld;
 
+int ThrottleZone(int value)
+{
+    if(REVERSE_THROTTLE) value = -value;
+    if(value < -4587) return -1;
+    if(value > 4587) return 1;
+    return 0;
+}
+
 // Shared throttle state prevents releasing high-G from cancelling an
 // acceleration/braking command still requested by the physical lever.
 int ThrottleKeys(int zone, int highGPressed)
@@ -51,6 +60,17 @@ int ThrottleKeys(int zone, int highGPressed)
     if(highGPressed) return 3;
     if(zone < 0) return 1;
     if(zone > 0) return 2;
+    return 0;
+}
+
+int UpdateThrottle(int source, int value)
+{
+    int selected = SelectThrottle(source, value);
+    if(selected & throttleMoved)
+    {
+        throttleZone = ThrottleZone(value);
+        return 1;
+    }
     return 0;
 }
 
@@ -112,6 +132,7 @@ int main()
         i = i+1;
     }
 
+    InitThrottle(A320Pilot[THR], TCAQuadrant12[QT_LEFT]);
     // Small center zones; beyond the zone, each direction holds a key.
     KeyAxis(&A320Pilot, JOYX, 0, AXMAP2(LIST(0,46,54,100), FLIGHT_ROLL_LEFT,0,FLIGHT_ROLL_RIGHT));
     if(REVERSE_PITCH)
@@ -145,22 +166,16 @@ int main()
     MapKey(&TCAQuadrant12, QT_BTN2, PULSE+ACTION_FLARES); // Right red pushbutton: flares
 
     printf("AC8 TCA profile loaded: stick=aircraft, hat=camera, B11-B14=wingmen.%c", 10);
-    printf("Move the left throttle once after Run; stop the profile after playing.%c", 10);
+    printf("Move either throttle after Run; the last moved controls speed. Stop the profile after playing.%c", 10);
 }
 
 int EventHandle(int type, alias o, int x)
 {
-    int value;
-    if((&o == &TCAQuadrant12) & (x == QT_LEFT))
+    int source;
+    if(((&o == &TCAQuadrant12) & (x == QT_LEFT)) | ((&o == &A320Pilot) & (x == THR)))
     {
-        value = o[x];
-        if(REVERSE_THROTTLE) value = -value;
-        // Forward half: accelerate. Center 14%: coast. Rear half: brake.
-        // Only the left lever controls speed; the right lever is ignored.
-        throttleZone = 0;
-        if(value < -4587) throttleZone = -1;
-        if(value > 4587) throttleZone = 1;
-        ApplyThrottle();
+        source = (&o == &TCAQuadrant12);
+        if(UpdateThrottle(source, o[x])) ApplyThrottle();
     }
     if((&o == &A320Pilot) & (x == B5))
     {
@@ -173,11 +188,32 @@ int EventHandle(int type, alias o, int x)
 // Offline compiler/state check; does not call Init or send input.
 int ValidateProfile()
 {
+    int forward = -1;
+    if(REVERSE_THROTTLE) forward = 1;
+    if(ValidateThrottle()) return 10;
+    if(ThrottleZone(0)) return 11;
+    if(ThrottleZone(-32767) != forward) return 12;
+    if(ThrottleZone(32767) != -forward) return 13;
     if(ThrottleKeys(-1,0) != 1) return 1;
     if(ThrottleKeys(0,0) != 0) return 2;
     if(ThrottleKeys(1,0) != 2) return 3;
     if(ThrottleKeys(-1,1) != 3) return 4;
     if(ThrottleKeys(0,1) != 3) return 5;
     if(ThrottleKeys(1,1) != 3) return 6;
+    InitThrottle(0,0);
+    throttleZone = 0;
+    if(UpdateThrottle(0,655)) return 14;
+    if(throttleZone) return 15;
+    if(!UpdateThrottle(0,-32767)) return 16;
+    if(throttleZone != forward) return 17;
+    if(!UpdateThrottle(1,32767)) return 18;
+    if(throttleZone != -forward) return 19;
+    if(UpdateThrottle(0,-32760)) return 20;
+    if(throttleZone != -forward) return 21;
+    if(ThrottleKeys(throttleZone,1) != 3) return 22;
+    if(ThrottleKeys(throttleZone,0) != ThrottleKeys(-forward,0)) return 23;
+    if(!UpdateThrottle(0,0)) return 24;
+    if(ThrottleKeys(throttleZone,0)) return 25;
+    InitThrottle(0,0);
     return 0;
 }

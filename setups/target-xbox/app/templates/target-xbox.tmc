@@ -2,6 +2,7 @@
 // Run this file in TARGET Script Editor, then Start_TARGET_Xbox_Bridge.cmd.
 // TARGET emits DirectInput only; the companion bridge supplies Xbox/XInput.
 include "target.tmh"
+include "throttle.tmh"
 
 int ConfigureCombined()
 {
@@ -98,7 +99,9 @@ int main()
     MapAxis(&A320Pilot, JOYX, DX_X_AXIS);
     MapAxis(&A320Pilot, JOYY, DX_Y_AXIS);
     MapAxis(&A320Pilot, RUDDER, DX_ZROT_AXIS);
+    MapAxis(&A320Pilot, THR, DX_Z_AXIS);
     MapAxis(&TCAQuadrant12, QT_LEFT, DX_Z_AXIS);
+    InitThrottle(A320Pilot[THR], TCAQuadrant12[QT_LEFT]);
     i = 0;
     while(i < 16)
     {
@@ -123,12 +126,17 @@ int main()
 
 int EventHandle(int type, alias o, int x)
 {
+    if(((&o == &TCAQuadrant12) & (x == QT_LEFT)) | ((&o == &A320Pilot) & (x == THR)))
+    {
+        if(!SelectThrottle((&o == &TCAQuadrant12), o[x])) return 0;
+    }
     DefaultMapping(&o, x);
 }
 
 // Offline validation: compiles and checks descriptor, never initializes HID.
 int ValidateProfile()
 {
+    if(ValidateThrottle()) return 10;
     ConfigureCombined();
     if(virtualj.ButtonsNumber != 18) return 1;
     if(!virtualj.AxisX | !virtualj.AxisY | !virtualj.AxisZ | !virtualj.AxisRz) return 2;

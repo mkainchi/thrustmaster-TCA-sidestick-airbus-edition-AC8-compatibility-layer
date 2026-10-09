@@ -14,7 +14,7 @@ DOCUMENTS = {'README.md', 'LICENSE', 'PRIVACY.md', 'THIRD_PARTY_NOTICES.md', 'AG
              'SKILL.md', 'PRODUCT.md', 'DESIGN.md', 'SKILLS.md', 'VALIDATION.md'}
 ROOT_FILES = ('README.md', 'LICENSE', 'PRIVACY.md', 'THIRD_PARTY_NOTICES.md', 'PRODUCT.md', 'DESIGN.md', 'configure.cmd', 'emulate.cmd')
 APP_FILES = tuple('app/' + name for name in ('__init__.py', '__main__.py', 'cli.py', 'dependencies.py', 'keyboard.py',
-    'model.py', 'server.py', 'session.py', 'target.py', 'windows.py', 'templates/keyboard.tmc', 'templates/target-xbox.tmc',
+    'model.py', 'server.py', 'session.py', 'target.py', 'windows.py', 'templates/keyboard.tmc', 'templates/target-xbox.tmc', 'templates/throttle.tmh',
     'web/index.html', 'web/boot.js', 'web/ui.js', 'web/logic.js', 'web/style.css',
     'web/device/sidestick.svg', 'web/device/quadrant.svg', 'web/device/sidestick-grip.svg', 'web/device/quadrant-grip.svg'))
 DOC_FILES = ('docs/SKILLS.md', 'docs/VALIDATION.md')

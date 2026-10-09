@@ -37,7 +37,7 @@ Configuration needs no administrator rights; driver installation may. The applic
 
 ## Edit mappings
 
-Choose a control in the selector, select **Edit** in **Mapping overview**, or activate a diagram number with the mouse, Enter or Space. Binding, inline errors and **Save configuration** stay together.
+Press a hardware button to select its device and binding automatically. Selection pauses while editing a field, capturing a key or saving; the next new press resumes selection. Held switches at connection do not change your selection. You can also choose a control in the selector, select **Edit** in **Mapping overview**, or activate a diagram number with the mouse, Enter or Space. Binding, inline errors and **Save configuration** stay together.
 
 - **Mapping overview** shows outputs by device and keyboard action.
 - **Axes and calibration** holds optional input adjustments.
@@ -48,11 +48,13 @@ Switching modes asks before discarding unsaved edits.
 
 ### Controls and calibration
 
-Stick roll/pitch controls flight, twist controls yaw, the POV controls the camera, and the left lever controls acceleration/braking. Xbox output uses the left stick for flight, right stick for camera and triggers for acceleration/braking.
+Stick roll/pitch controls flight, twist controls yaw, and the POV controls the camera. The sidestick slider and quadrant's left lever both control acceleration/braking. Moving either beyond 1% of full travel transfers control immediately to it; the idle throttle is ignored. Both share throttle inversion and center deadzone. The quadrant's right lever is ignored. Xbox output uses the left stick for flight, right stick for camera and triggers for acceleration/braking.
+
+Xbox starts with the quadrant's current position; keyboard output stays neutral until a throttle is moved. High-G release restores the active throttle. If both throttles move in one direct-input sample, the current owner stays active; TARGET processes events in arrival order.
 
 High-G overrides throttle while held; an assigned button binding still fires. Set its number to 0 to disable it. Xbox combinations use `+`, such as `LB+RB`.
 
-Calibration adjusts axes, inversion, deadzones, yaw threshold, camera strength, throttle neutral band and input frequency. X/Y/Z/R/U/V are Windows axes; defaults use X/Y and R twist, with Z throttle for TARGET Combined.
+Calibration adjusts axes, inversion, deadzones, yaw threshold, camera strength, throttle neutral band and input frequency. X/Y/Z/R/U/V are Windows axes; defaults use X/Y and R twist, with Z throttle for TARGET Combined. The sidestick slider uses physical Z/THR; the throttle axis selector configures the quadrant in direct/keyboard modes and the Combined throttle output in TARGET → Xbox.
 
 Buttons 11–14 are ACE COMBAT 7/8 wingman examples: Xbox D-pad or keyboard F1–F4. Check these and all other bindings in your game's settings.
 

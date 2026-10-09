@@ -169,3 +169,21 @@ def test_readiness_timeout_is_actionable():
     ticks = iter([0, 1, 2])
     with pytest.raises(RuntimeError, match='ready'):
         wait_for(lambda: False, 'TARGET did not become ready.', timeout=1, clock=lambda: next(ticks), sleep=lambda _: None)
+def test_direct_session_uses_last_moved_throttle_and_resets_ownership(tmp_path):
+    args, pad, inputs, _ = harness(tmp_path)
+    readings = iter([(0, 1), (0, 1), (-.9, .99), (-.9, -.5)])
+    def snapshot(mode):
+        stick, quadrant = next(readings)
+        return {'stick': {'axes': [0, 0, stick, 0, 0, 0], 'buttons': [], 'hat': [0, 0]},
+                'quadrant': {'axes': [quadrant, 0, 0, 0, 0, 0], 'buttons': [], 'hat': [0, 0]}}
+    # Startup presence read precedes the three emulation samples.
+    inputs.snapshot = snapshot
+    s.run(tmp_path, seconds=.024, **args)
+    assert pad.values[0]['lt'] == 1
+    assert pad.values[1]['rt'] == pytest.approx(.83 / .93)
+    assert pad.values[2]['rt'] == pytest.approx(.43 / .93)
+    args, pad, inputs, _ = harness(tmp_path)
+    inputs.snapshot = lambda mode: {'stick': {'axes': [0, 0, -1, 0, 0, 0], 'buttons': [], 'hat': [0, 0]},
+                                   'quadrant': {'axes': [1, 0, 0, 0, 0, 0], 'buttons': [], 'hat': [0, 0]}}
+    s.run(tmp_path, seconds=.008, **args)
+    assert pad.values[0]['lt'] == 1

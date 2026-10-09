@@ -117,3 +117,32 @@ def test_keyboard_layout_validation_identifies_layout_field():
     with pytest.raises(ValueError) as error:
         validate('keyboard',defaults('keyboard'))
     assert getattr(error.value,'field',None)=='layout'
+def test_throttle_ownership_filters_noise_accumulates_movement_and_keeps_active_value():
+    from app import model
+    selector = model.ThrottleSelector()
+    assert selector.read(0, .8) == .8
+    assert selector.read(.01, .8) == .8
+    assert selector.read(.02, .8) == .8
+    assert selector.read(.021, .8) == .021
+    assert selector.read(.025, .81) == .025
+    assert selector.read(.025, .83) == .83
+    assert selector.read(.2, .5) == .5  # Both moved: keep quadrant ownership.
+    assert selector.read(-.5, .5) == -.5
+    assert selector.read(-.2, .7) == -.2  # Both moved: keep stick ownership.
+    assert model.ThrottleSelector().read(-1, 1) == 1
+
+
+def test_selected_throttle_uses_shared_response_and_high_g_restores_current_source():
+    from app import model
+    cfg = model.defaults('xbox')
+    cfg['throttle_deadzone'] = .1
+    state = {name: {'axes': [0.] * 6, 'buttons': [], 'hat': [0, 0]} for name in ('stick', 'quadrant')}
+    assert model.report(state, cfg, throttle=-1)['rt'] == 1
+    assert model.report(state, cfg, throttle=1)['lt'] == 1
+    assert model.report(state, cfg, throttle=.05)['rt'] == 0
+    cfg['invert']['throttle'] = False
+    assert model.report(state, cfg, throttle=1)['rt'] == 1
+    state['stick']['buttons'] = [5]
+    assert model.report(state, cfg, throttle=-1)['rt'] == 1
+    state['stick']['buttons'] = []
+    assert model.report(state, cfg, throttle=-1)['rt'] == 0
