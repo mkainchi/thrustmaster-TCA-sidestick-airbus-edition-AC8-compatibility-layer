@@ -7,6 +7,18 @@ import pytest
 from types import SimpleNamespace
 
 
+@pytest.fixture(autouse=True)
+def installed_hidhide(monkeypatch):
+    monkeypatch.setattr(d, 'hiding_ready', lambda:True)
+
+
+@pytest.mark.parametrize('mode', ['keyboard', 'xbox', 'target-xbox'])
+def test_hidhide_is_required_for_every_mode(tmp_path, mode):
+    items = status(tmp_path, mode, '', candidates=[], probe=lambda:True, runtime=lambda:True,
+                   microsoft=lambda:True, hiding=lambda:False)
+    assert next(i for i in items if i['id'] == 'hidhide')['ready'] is False
+
+
 def test_target_folder_requires_gui_plugin_and_headers(tmp_path):
     assert target_installation(tmp_path) is None
     for name in ('x64/TARGETGUI.exe', 'Plugins/sys.dll', 'scripts/target.tmh', 'scripts/defines.tmh', 'scripts/hid.tmh', 'scripts/sys.tmh'):
@@ -16,10 +28,10 @@ def test_target_folder_requires_gui_plugin_and_headers(tmp_path):
 
 def test_only_selected_mode_dependencies_are_requested(tmp_path):
     items = status(tmp_path, 'xbox', '', candidates=[], probe=lambda: True, runtime=lambda: True, microsoft=lambda:True)
-    assert {i['id'] for i in items} == {'runtime', 'microsoft', 'vigem'}
+    assert {i['id'] for i in items} == {'runtime', 'microsoft', 'hidhide', 'vigem'}
     assert all(i['ready'] for i in items)
     items = status(tmp_path, 'keyboard', '', candidates=[], probe=lambda: True, runtime=lambda: True, microsoft=lambda:True)
-    assert {i['id'] for i in items} == {'runtime', 'microsoft', 'target'}
+    assert {i['id'] for i in items} == {'runtime', 'microsoft', 'hidhide', 'target'}
     assert not items[-1]['ready']
 
 

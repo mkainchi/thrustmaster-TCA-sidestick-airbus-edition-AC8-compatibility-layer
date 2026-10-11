@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 from .windows import Pad, load_dll
+from .hiding import ready as hiding_ready, URL as HIDHIDE_URL
 
 TARGET_URL = 'https://support.thrustmaster.com/en/product/tca-sidestick-airbus-edition-en/'
 VIGEM_URL = 'https://github.com/nefarius/ViGEmBus/releases/tag/v1.22.0'
@@ -63,13 +64,16 @@ def bus_ready(root):
         pad.close()
 
 
-def status(root, mode, configured, candidates=None, probe=None, runtime=None, microsoft=None):
+def status(root, mode, configured, candidates=None, probe=None, runtime=None, microsoft=None, hiding=None):
     runtime = runtime if runtime is not None else lambda: integrity(root)
     microsoft = microsoft if microsoft is not None else microsoft_ready
+    hiding = hiding if hiding is not None else hiding_ready
     items = [dict(id='runtime', label='Bundled runtime', ready=runtime(), path='', url='',
                   remedy='Restore the bundle from a verified release if files are missing or changed.'),
              dict(id='microsoft', label='Microsoft Visual C++ x64 runtime', ready=microsoft(), path='', url=MICROSOFT_URL,
-                  remedy='Download and install the official x64 runtime, then recheck.')]
+                  remedy='Download and install the official x64 runtime, then recheck.'),
+             dict(id='hidhide', label='HidHide device isolation', ready=hiding(), path='', url=HIDHIDE_URL,
+                  remedy='Install HidHide yourself and restart Windows. Close its configuration client and turn inverse application cloak off, then recheck. Close Steam and the game before emulating; reopen them after READY.')]
     if mode in ('keyboard', 'target-xbox'):
         paths = [Path(configured)] if configured else (target_candidates() if candidates is None else candidates)
         found = next((p for p in paths if target_installation(p)), None)

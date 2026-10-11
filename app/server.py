@@ -50,7 +50,7 @@ def create_server(root, fixture=None, initial_mode=None):
             return status(root, mode, path)
         data = fixture_data()
         entries = status(root, mode, path, candidates=[], probe=lambda: data['ready'],
-                         runtime=lambda: True, microsoft=lambda: True)
+                         runtime=lambda: True, microsoft=lambda: True, hiding=lambda: data['ready'])
         for item in entries:
             if item['id'] == 'target' and path == 'fixture-target':
                 item.update(ready=True, path=path)

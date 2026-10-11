@@ -32,6 +32,13 @@ class Pad:
     def close(self): self.closed = True
 
 
+class Hiding:
+    def start(self): pass
+    def combined(self): pass
+    def verify(self): pass
+    def close(self): pass
+
+
 def harness(root, mode='xbox', acknowledge=True, ready=True):
     cfg = defaults(mode)
     if mode == 'keyboard': cfg['layout'] = '00000409'
@@ -51,7 +58,7 @@ def harness(root, mode='xbox', acknowledge=True, ready=True):
     args = dict(guard=nullcontext, inputs=inputs, pad_factory=lambda path:pad, detect=lambda *a:[{'id':'target','path':str(root),'ready':True}],
                 launch=launch, read_xinput=lambda:{0:None} if pad.connected else {}, clock=ticks, sleep=sleep,
                 lock=lambda h,release=False:locks.append(release), layouts_factory=lambda:SimpleNamespace(resolve=lambda *a:(1004,[])),
-                present=lambda:True, wallclock=time.time)
+                present=lambda:True, wallclock=time.time, hiding_factory=lambda *a:Hiding())
     return args, pad, inputs, locks
 
 
@@ -187,3 +194,95 @@ def test_direct_session_uses_last_moved_throttle_and_resets_ownership(tmp_path):
                                    'quadrant': {'axes': [1, 0, 0, 0, 0, 0], 'buttons': [], 'hat': [0, 0]}}
     s.run(tmp_path, seconds=.008, **args)
     assert pad.values[0]['lt'] == 1
+
+
+@pytest.mark.parametrize('mode', ['keyboard', 'xbox', 'target-xbox'])
+def test_source_isolation_precedes_input_and_cleans_up_after_output(tmp_path, mode, monkeypatch):
+    args, pad, inputs, locks = harness(tmp_path, mode)
+    events = []
+    class Isolation(Hiding):
+        def start(self): events.append('hide')
+        def combined(self): events.append('combined')
+        def verify(self): events.append('verify')
+        def close(self):
+            assert pad.closed == (mode != 'keyboard')
+            events.append('restore')
+    def factory(local, applications):
+        assert local == tmp_path / '.local'
+        assert applications[0] == s.sys.executable
+        return Isolation()
+    args['hiding_factory'] = factory
+    snapshot = inputs.snapshot
+    def read(mode):
+        assert 'hide' in events
+        return snapshot(mode)
+    inputs.snapshot = read
+    monkeypatch.setattr(s, 'target_installation', lambda folder: 'targetgui.exe')
+    s.run(tmp_path, seconds=.01, **args)
+    assert events[0] == 'hide' and events[-1] == 'restore' and 'verify' in events
+    assert ('combined' in events) == (mode != 'xbox')
+
+
+def test_isolation_failure_prevents_output_and_restore_failure_keeps_recovery(tmp_path):
+    args, pad, inputs, locks = harness(tmp_path)
+    class Isolation(Hiding):
+        def start(self): raise RuntimeError('HidHide failed')
+    args['hiding_factory'] = lambda *a:Isolation()
+    with pytest.raises(RuntimeError, match='HidHide'): s.run(tmp_path, **args)
+    assert not pad.connected and locks == [False, True]
+    args, pad, inputs, locks = harness(tmp_path)
+    class BrokenRestore(Hiding):
+        def close(self): raise RuntimeError('HidHide restore failed')
+    args['hiding_factory'] = lambda *a:BrokenRestore()
+    with pytest.raises(RuntimeError, match='restore'): s.run(tmp_path, seconds=.01, **args)
+    assert pad.closed and locks == [False, True] and (tmp_path / '.local/session.json').exists()
+
+
+def test_primary_error_survives_hidhide_cleanup_failure(tmp_path, capsys):
+    args, pad, inputs, locks = harness(tmp_path)
+    class Isolation(Hiding):
+        def verify(self): raise RuntimeError('isolation lost')
+        def close(self): raise RuntimeError('restore failed')
+    args['hiding_factory'] = lambda *a:Isolation()
+    with pytest.raises(RuntimeError, match='isolation lost'): s.run(tmp_path, **args)
+    assert pad.closed and locks == [False, True]
+    assert 'HidHide restoration failed' in capsys.readouterr().err
+
+
+def test_unavailable_hiding_client_releases_ownership_without_starting_output(tmp_path):
+    args, pad, inputs, locks = harness(tmp_path)
+    def unavailable(*a): raise RuntimeError('HidHide unavailable')
+    args['hiding_factory'] = unavailable
+    with pytest.raises(RuntimeError, match='unavailable'): s.run(tmp_path, **args)
+    assert locks == [False, True] and not pad.connected and not inputs.modes
+    assert not (tmp_path / '.local/session.json').exists()
+
+
+def test_hidhide_subprocess_checks_do_not_interrupt_the_input_loop(tmp_path):
+    args, pad, inputs, locks = harness(tmp_path)
+    checks = []
+    class Isolation(Hiding):
+        def verify(self): checks.append(True)
+    args['hiding_factory'] = lambda *a:Isolation()
+    s.run(tmp_path, seconds=1.05, **args)
+    assert len(checks) == 1
+    assert len(pad.values) > 100
+
+
+@pytest.mark.parametrize('mode', ['keyboard', 'target-xbox'])
+def test_target_isolation_waits_for_late_combined_enumeration(tmp_path, mode, monkeypatch):
+    args, pad, inputs, locks = harness(tmp_path, mode)
+    attempts = []
+    for name in ('Interpreter.exe', 'TmService.exe'): (tmp_path / name).touch()
+    class Isolation(Hiding):
+        def combined(self):
+            attempts.append(True)
+            if len(attempts) == 1: raise RuntimeError('not yet enumerated')
+    def factory(local, applications):
+        assert str(tmp_path / 'Interpreter.exe') in applications
+        assert str(tmp_path / 'TmService.exe') in applications
+        return Isolation()
+    args['hiding_factory'] = factory
+    monkeypatch.setattr(s, 'target_installation', lambda folder:'targetgui.exe')
+    s.run(tmp_path, seconds=.01, **args)
+    assert len(attempts) == 2

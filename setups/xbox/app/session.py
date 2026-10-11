@@ -10,6 +10,7 @@ from .dependencies import status, target_installation
 from .keyboard import WindowsLayouts
 from .model import Store, validate, report, ThrottleSelector
 from .target import generate
+from .hiding import Hiding
 from .windows import Joysticks, Pad, xinput, physical_present, controller_guard
 
 
@@ -46,7 +47,7 @@ def run(root, seconds=None, guard=controller_guard, **boundaries):
 
 def owned_run(root, seconds=None, inputs=None, pad_factory=Pad, detect=status, launch=subprocess.Popen,
         read_xinput=xinput, clock=time.monotonic, sleep=time.sleep, lock=file_lock, layouts_factory=WindowsLayouts,
-        present=physical_present, wallclock=time.time, expected_mode=None):
+        present=physical_present, wallclock=time.time, expected_mode=None, hiding_factory=Hiding):
     store = Store(root)
     saved = store.load()
     mode = saved['preferred_mode']
@@ -71,10 +72,17 @@ def owned_run(root, seconds=None, inputs=None, pad_factory=Pad, detect=status, l
     nonce = secrets.token_hex(16)
     stop = local / f'{nonce}.stop'
     ready = local / f'{nonce}.ready'
-    pad, process = None, None
+    pad, process, hiding = None, None, None
     metadata = local / 'session.json'
     cleanup_failed = False
     try:
+        applications = [sys.executable]
+        if mode in ('keyboard', 'target-xbox'):
+            folder = next(item['path'] for item in prerequisites if item['id'] == 'target')
+            applications.append(str(target_installation(folder)))
+            applications.extend(str(p) for name in ('Interpreter.exe', 'TmService.exe') for p in Path(folder).rglob(name))
+        hiding = hiding_factory(local, applications)
+        hiding.start()
         if metadata.exists():
             cleanup_failed = True
             try:
@@ -90,10 +98,17 @@ def owned_run(root, seconds=None, inputs=None, pad_factory=Pad, detect=status, l
             resolver = layouts_factory().resolve if mode == 'keyboard' else None
             script = local / f'{mode}.tmc'
             script.write_text(generate(mode, cfg, local, nonce, resolver, copilot), encoding='utf-8')
-            folder = next(item['path'] for item in prerequisites if item['id'] == 'target')
             process = launch([str(target_installation(folder)), '-r', str(script.resolve())], cwd=folder)
             wait_for(lambda: ready.exists() and ready.read_text() == nonce,
                      'TARGET did not become ready. Inspect its compile/filter error and stop that profile before retrying.',
+                     clock=clock, sleep=sleep)
+            def isolate_combined():
+                try:
+                    hiding.combined()
+                    return True
+                except RuntimeError:
+                    return False
+            wait_for(isolate_combined, 'HidHide could not isolate TARGET Combined. Stop TARGET, recheck HidHide and reconnect both controllers.',
                      clock=clock, sleep=sleep)
         if mode != 'keyboard':
             if mode == 'target-xbox':
@@ -117,7 +132,8 @@ def owned_run(root, seconds=None, inputs=None, pad_factory=Pad, detect=status, l
             pad.connect()
             wait_for(lambda: len(set(read_xinput()) - before) == 1,
                      'The Xbox controller did not appear in XInput. Recheck ViGEmBus and free controller slots.', clock=clock, sleep=sleep)
-        print('READY. Keep this window open. Ctrl+C or emulate.cmd --stop ends this session.')
+        hiding.verify()
+        print('READY. Open Steam and the game now. Keep this window open. Ctrl+C or emulate.cmd --stop ends this session.')
         deadline = None if seconds is None else clock() + seconds
         next_presence_check = 0
         while not stop.exists() and (deadline is None or clock() < deadline):
@@ -153,9 +169,20 @@ def owned_run(root, seconds=None, inputs=None, pad_factory=Pad, detect=status, l
                         else:
                             raise
         finally:
-            if not cleanup_failed:
-                metadata.unlink(missing_ok=True)
             try:
-                lock(handle, release=True)
+                try:
+                    if hiding is not None:
+                        hiding.close()
+                except (RuntimeError, OSError):
+                    cleanup_failed = True
+                    if failed:
+                        print('HidHide restoration failed. Recheck its configuration client before using physical controllers.', file=sys.stderr)
+                    else:
+                        raise
             finally:
-                handle.close()
+                if not cleanup_failed:
+                    metadata.unlink(missing_ok=True)
+                try:
+                    lock(handle, release=True)
+                finally:
+                    handle.close()

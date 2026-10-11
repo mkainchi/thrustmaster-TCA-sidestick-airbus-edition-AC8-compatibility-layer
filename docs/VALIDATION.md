@@ -26,6 +26,7 @@ Installed TARGET validation compiles captured PrintScreen, F13/F24 and modifier 
 
 - TARGET starts through its GUI's `-r` option. Each session requires fresh readiness; TARGET → Xbox also requires a Combined controller with 4 axes and 32 buttons.
 - Xbox startup verifies a new XInput slot. Other controllers can occupy earlier player slots.
+- All modes require HidHide. Before reading input, the session allows the bridge/TARGET executables and hides both physical gaming devices; TARGET modes also wait for and hide Combined before READY. Isolation settings are verified before READY; the input loop does not launch HidHide subprocesses. Do not change HidHide settings during a session. Stop/failure restores only session additions and the original cloak state; interrupted restoration retains a private recovery journal. These configuration checks do not prove visibility through already-open Steam/game handles.
 - Stop affects only the package's owned session. The bridge neutralizes output and removes its virtual controller after stopping, startup failure or disconnect.
 - TARGET acknowledges a private stop request and aborts its own profile; unrelated TARGET processes are not killed. If acknowledgement fails, select **Stop** in TARGET and reconnect both devices.
 - Disconnects are checked every second; keyboard mode also monitors TARGET's readiness heartbeat.
@@ -59,6 +60,8 @@ These results describe checks already performed. They do not replace a fresh har
 ### 1. Prepare
 
 Stop emulation and TARGET profiles. Reconnect both devices directly to the PC, confirm them in Windows Game Controllers, then run `configure.cmd` and recheck dependencies.
+
+Install HidHide yourself and restart if needed. Turn inverse cloak off, remove Steam/game executables from Applications, and close its configuration client. Fully close Steam and the game before each session, then reopen after READY. In **every mode**, verify Steam and the game cannot see either physical TCA controller or TARGET Combined. Xbox modes must expose only the emulated Xbox controller; keyboard mode must accept the generated keys without native HOTAS input. Verify both devices become visible again after stop, subject to any pre-existing hiding settings. If visibility is wrong, stop and reconnect before retrying; do not claim isolation from mocked CLI checks. Test failure/disconnect restoration and forced-exit recovery separately, and verify unrelated HidHide entries survive.
 
 ### 2. Check direct Xbox motion
 

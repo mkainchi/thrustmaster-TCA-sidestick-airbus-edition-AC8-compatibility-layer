@@ -14,10 +14,13 @@ There is no telemetry, upload, account or cloud service. Official dependency lin
 | Controller input through WinMM | Read controls |
 | Generic hardware IDs through SetupAPI | Check presence without retrieving instance paths or serials |
 | TARGET locations and dependency health | Find prerequisites and check availability |
+| HidHide gaming-device discovery and configured application/device lists | Match supported controllers, preserve existing settings and isolate session input; output is captured privately and never logged |
 
 The application does not read game saves, credentials, network settings or unrelated host inventories.
 
 Each package stores mappings, installation paths, generated scripts, readiness/stop signals, session metadata, previous configuration and migrated legacy originals in ignored `.local/`. Skill reports, traces, screenshots, development environments and build archives also remain ignored.
+
+HidHide discovery includes device instance paths and may include serial fields supplied by its CLI. Only matching controller instance paths and session-owned application additions are retained in the ignored `.local/hidhide-session.json` recovery journal; serial fields are neither used nor saved. The journal is removed after successful restoration. Errors never include CLI output, command arguments or private matched values.
 
 Public Python runtime dependencies belong in `runtime/` and `dependencies/`, including required `.pyd` extension modules. Development packages may use an ignored `.venv/` or CI's configured Python; they do not need to live in `.local/`. Development packages are not personal data and remain excluded from gamer archives by the release allowlist.
 

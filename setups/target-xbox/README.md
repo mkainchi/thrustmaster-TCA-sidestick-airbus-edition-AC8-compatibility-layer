@@ -11,7 +11,7 @@ Map a Thrustmaster TCA Sidestick Airbus Edition (Pilot or Copilot) and TCA Quadr
 1. Connect both devices and run `configure.cmd`.
 2. Choose a mode and edit its mappings. Keyboard mode requires an explicit choice of the installed Windows layout used by your game.
 3. Open **Dependencies**, install missing prerequisites from the official links, select **Recheck dependencies**, then **Save configuration**.
-4. Run `emulate.cmd` before launching the game. Keep its window open.
+4. Fully close Steam and the game, then run `emulate.cmd`. After **READY**, open Steam and launch the game. Keep the emulation window open.
 
 Stop with `emulate.cmd --stop` or Ctrl+C in the emulation window before editing mappings. Ctrl+C in the configuration command window closes the local editor.
 
@@ -21,9 +21,9 @@ Standalone packages under `setups/` include their own runtime, dependencies and 
 
 | Editor label | Command mode | Use | Prerequisites |
 | --- | --- | --- | --- |
-| Keyboard · TARGET | `keyboard` | Flight, camera and button keys through TARGET | TARGET; Visual C++ x64 runtime |
-| Xbox · direct input | `xbox` | Ordinary Xbox-controller play from native joystick input | ViGEmBus; Visual C++ x64 runtime |
-| TARGET → Xbox | `target-xbox` | Advanced route through TARGET's Combined controller | TARGET; ViGEmBus; Visual C++ x64 runtime |
+| Keyboard · TARGET | `keyboard` | Flight, camera and button keys through TARGET | TARGET; HidHide; Visual C++ x64 runtime |
+| Xbox · direct input | `xbox` | Ordinary Xbox-controller play from native joystick input | ViGEmBus; HidHide; Visual C++ x64 runtime |
+| TARGET → Xbox | `target-xbox` | Advanced route through TARGET's Combined controller | TARGET; ViGEmBus; HidHide; Visual C++ x64 runtime |
 
 Both Xbox modes use the same ViGEmClient/XInput bridge. Choose TARGET → Xbox when your setup needs TARGET to combine the devices first.
 
@@ -32,8 +32,11 @@ Both Xbox modes use the same ViGEmClient/XInput bridge. Choose TARGET → Xbox w
 - **[TARGET](https://support.thrustmaster.com/en/product/tca-sidestick-airbus-edition-en/):** install it yourself. If automatic detection fails, enter the folder containing `Plugins`, `scripts` and `x64/TARGETGUI.exe` (or root `TARGETGUI.exe`), then recheck.
 - **[ViGEmBus 1.22.0](https://github.com/nefarius/ViGEmBus/releases/tag/v1.22.0):** install the signed driver and restart if requested. The project uses this archived interface and checks an actual client connection.
 - **[Microsoft Visual C++ x64 runtime](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist):** required by embedded Python and the native client; install it if they cannot start.
+- **[HidHide](https://docs.nefarius.at/projects/HidHide/Simple-Setup-Guide/):** install it yourself and restart Windows. Close its configuration client before emulating and keep inverse application cloak off. Remove Steam and game executables from its Applications list. The session allows its Python bridge and TARGET executables, hides the supported controllers before READY, and restores its own changes on stop. The virtual Xbox controller remains visible. Do not edit HidHide while emulation is running.
 
 Configuration needs no administrator rights; driver installation may. The application never installs drivers or accepts their licenses. Bundled dependencies are verified against `dependencies/manifest.json`; missing or modified files block emulation.
+
+HidHide changes apply to newly opened device handles. Close Steam and the game before emulation, then reopen them after READY. If the native controllers remain visible, stop, reconnect both devices and retry. Existing hiding settings are preserved; startup refuses inverse cloak, allowlisted Steam or enabling an inactive list containing unrelated controllers. After a forced exit, the next emulation start restores the private HidHide recovery journal before retrying. If restoration fails, use HidHide Configuration Client to restore visibility and recheck; retain `.local/hidhide-session.json` for the next recovery attempt.
 
 ## Edit mappings
 
@@ -95,7 +98,7 @@ Each package includes four original SVG diagrams: sidestick and quadrant top vie
 | Missing TARGET products you do not own | Excluded-device messages can be harmless; check whether supported devices initialize. |
 | No Xbox output | Recheck ViGEmBus and free an XInput slot. Disconnect other controllers if the game requires player 1. |
 | TARGET does not acknowledge stopping | Select **Stop** in TARGET, reconnect both devices, then retry. |
-| Duplicate game input | Check game controller settings or an independently installed device-hiding tool; this project does not install one. |
+| Duplicate game input | Recheck HidHide, remove Steam and the game from its Applications list, stop emulation, close Steam/the game, reconnect both controllers, then emulate again and reopen Steam after READY. |
 
 For startup, disconnect and cleanup behavior, see [Runtime checks](docs/VALIDATION.md#runtime-checks).
 

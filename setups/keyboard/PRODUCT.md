@@ -24,6 +24,8 @@ Xbox mappings use addable native button dropdowns, including full-pressure LT/RT
 
 Configuration runs on loopback; TARGET and system drivers are installed separately. Stick motion controls flight; the POV controls the camera. Editable ACE COMBAT examples must match the game's bindings.
 
+Every emulation mode requires HidHide isolation of both physical controllers and, for TARGET modes, the Combined controller. The bridge and TARGET retain input access; Steam and games receive only the intended emulation. Preserve existing HidHide settings and restore session changes after stopping or failure. Start emulation with Steam and the game closed, then open them after READY.
+
 ## Capabilities and Constraints
 
 - Plain HTML/CSS/JavaScript and Python.

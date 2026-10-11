@@ -116,8 +116,10 @@ for (const mode of ['keyboard','xbox','target-xbox']) {
     } else {
       await expect(page.locator('#layout-section')).toBeHidden();
       await setXbox(page,'A+RB');
-      editor.data.ready=true; await writeFile(editor.fixture,JSON.stringify(editor.data));
     }
+    await page.getByRole('button',{name:'Recheck dependencies'}).click();
+    await expect(page.locator('#dependencies')).toContainText('HidHide device isolation · Needs attention');
+    editor.data.ready=true; await writeFile(editor.fixture,JSON.stringify(editor.data));
     await page.getByRole('button',{name:'Recheck dependencies'}).click();
     await expect(page.locator('#dependency-message')).toContainText('Ready for emulation');
     await page.getByRole('button',{name:'Save configuration'}).click();
